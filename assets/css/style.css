@@ -1,0 +1,37 @@
+:root {
+  --color-blue: #317EBD;        /* biru utama */
+  --color-blue-light: #E6F2FB;  /* biru muda untuk background soft */
+  --color-dark-blue: #2A1473;   /* biru tua elegan */
+  --color-orange: #E38319;      /* oranye utama */
+  --color-orange-light: #FDE9D6;/* oranye muda */
+  --color-gold: #DCBA70;        /* aksen emas */
+  --color-white: #FFFFFF;
+  --color-gray-light: #F8FAFC;  /* abu lembut */
+  --color-gray: #64748B;        /* abu netral */
+}
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: var(--color-blue);
+  width: 0%;
+  z-index: 100;
+  transition: width 0.2s linear;
+}
+
+.hero-section {
+  min-height: calc(100vh - 72px);
+  display: flex;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+}
