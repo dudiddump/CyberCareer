@@ -1,13 +1,12 @@
 :root {
-  --color-blue: #317EBD;        /* biru utama */
-  --color-blue-light: #E6F2FB;  /* biru muda untuk background soft */
-  --color-dark-blue: #2A1473;   /* biru tua elegan */
-  --color-orange: #E38319;      /* oranye utama */
-  --color-orange-light: #FDE9D6;/* oranye muda */
-  --color-gold: #DCBA70;        /* aksen emas */
-  --color-white: #FFFFFF;
-  --color-gray-light: #F8FAFC;  /* abu lembut */
-  --color-gray: #64748B;        /* abu netral */
+  --color-blue: #0061FF;
+  --color-blue-light: #bed9ff;
+  --color-dark-blue: #002B7F;
+  --color-orange: #FF6B00;
+  --color-orange-light: #ffc89e;
+  --color-gold: #FFD700;
+  --color-gray-light: #e7e7e7;
+  --color-gray: #475569;
 }
 html {
   scroll-behavior: smooth;
