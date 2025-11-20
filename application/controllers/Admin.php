@@ -19,9 +19,22 @@ class Admin extends CI_Controller {
         }
     }
     
+    public function dashboard()
+    {
+        $data['title'] = 'Dashboard Admin';
+        $data['user'] = $this->db->get_where('users', ['id' => $this->session->userdata('user_id')])->row();
+
+        $this->load->view('partials/header_dashboard', $data);
+        echo "<h1>Selamat Datang, Admin!</h1><p>Halaman dashboard admin.</p>";
+        $this->load->view('partials/footer_dashboard');
+    }
+
     public function tambah_mahasiswa()
     {
+        $data['title'] = 'Tambah Mahasiswa';
+        $this->load->view('partials/header_dashboard', $data);
         $this->load->view('admin/v_tambah_mahasiswa');
+        $this->load->view('partials/footer_dashboard');
     }
 
     public function proses_tambah_mahasiswa()
@@ -35,7 +48,7 @@ class Admin extends CI_Controller {
         $this->form_validation->set_rules('tahun_masuk', 'Tahun Masuk', 'required|trim|integer');
 
         if ($this->form_validation->run() == FALSE) {
-            $this->load->view('admin/v_tambah_mahasiswa');
+            $this->tambah_mahasiswa();
         } else {
             $nim = $this->input->post('nim');
             $nama_lengkap = $this->input->post('nama_lengkap');
@@ -64,6 +77,11 @@ class Admin extends CI_Controller {
     
     public function kelola_mahasiswa()
     {
-        echo "Halaman Kelola Mahasiswa (akan dibuat nanti)";
+        $data['title'] = 'Kelola Mahasiswa';
+        $data['user'] = $this->db->get_where('users', ['id' => $this->session->userdata('user_id')])->row();
+
+        $this->load->view('partials/header_dashboard', $data);
+        echo "<h1>Kelola Mahasiswa</h1><p>Halaman ini akan menampilkan daftar mahasiswa.</p>";
+        $this->load->view('partials/footer_dashboard');
     }
 }

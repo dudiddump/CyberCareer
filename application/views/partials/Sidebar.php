@@ -1,36 +1,44 @@
-<aside class="w-64 flex-shrink-0 bg-white shadow-lg">
-    <div class="p-6 text-center border-b">
-        <a href="#" class="text-xl font-bold text-blue-700">CyberCareer</a>
-        <div class="mt-4">
-            <p class="font-semibold text-gray-800"><?= isset($user->nama_lengkap) ? $user->nama_lengkap : 'Nama Pengguna' ?></p>
-            <p class="text-sm text-gray-500"><?= isset($user->nim) ? $user->nim : 'ID Pengguna' ?></p>
-        </div>
+<?php $role = $this->session->userdata('role'); ?>
+
+<style>
+    body.dark .sidebar {
+        background-color: #102A4C !important;
+    }
+</style>
+<div class="sidebar p-3 shadow bg-light" style="width:250px; min-height:100vh;">
+    <h4 class="fw-bold text-primary text-center">CyberCareer</h4>
+
+    <div class="mt-3 text-center">
+        <p class="fw-semibold"><?= isset($user->nama_lengkap) ? $user->nama_lengkap : 'Nama Pengguna' ?></p>
+        <p class="text-muted"><?= isset($user->nim) ? $user->nim : 'ID Pengguna' ?></p>
     </div>
 
-    <nav class="mt-6">
-        <?php $role = $this->session->userdata('role'); ?>
+    <hr>
+
+    <ul class="nav flex-column">
 
         <?php if ($role == 'mhs'): ?>
-            <a href="<?= base_url('mahasiswa/dashboard') ?>" class="block py-3 px-6 text-white bg-blue-700 font-semibold">Dashboard</a>
-            <a href="#" class="block py-3 px-6 text-gray-600 hover:bg-gray-100">Daftar Mitra</a>
-            <a href="#" class="block py-3 px-6 text-gray-600 hover:bg-gray-100">Logbook Magang</a>
-            <a href="<?= base_url('user/profil') ?>" class="block py-3 px-6 text-gray-600 hover:bg-gray-100">Profil Saya</a>
+            <li><a href="<?= base_url('mahasiswa/dashboard') ?>" class="nav-link">Dashboard</a></li>
+            <li><a href="#" class="nav-link">Daftar Mitra</a></li>
+            <li><a href="#" class="nav-link">Logbook Magang</a></li>
+            <li><a href="<?= base_url('user/profil') ?>" class="nav-link">Profil Saya</a></li>
 
         <?php elseif ($role == 'dsn'): ?>
-            <a href="<?= base_url('dosen/dashboard') ?>" class="block py-3 px-6 text-white bg-blue-700 font-semibold">Dashboard</a>
-            <a href="#" class="block py-3 px-6 text-gray-600 hover:bg-gray-100">Mahasiswa Bimbingan</a>
-            <a href="#" class="block py-3 px-6 text-gray-600 hover:bg-gray-100">Review Logbook</a>
-            <a href="<?= base_url('user/profil') ?>" class="block py-3 px-6 text-gray-600 hover:bg-gray-100">Profil Saya</a>
+            <li><a href="<?= base_url('dosen/dashboard') ?>" class="nav-link">Dashboard</a></li>
+            <li><a href="#" class="nav-link">Mahasiswa Bimbingan</a></li>
+            <li><a href="#" class="nav-link">Review Logbook</a></li>
+            <li><a href="<?= base_url('user/profil') ?>" class="nav-link">Profil Saya</a></li>
 
         <?php elseif ($role == 'adm'): ?>
-            <a href="<?= base_url('admin/dashboard') ?>" class="block py-3 px-6 text-white bg-blue-700 font-semibold">Dashboard</a>
-            <a href="#" class="block py-3 px-6 text-gray-600 hover:bg-gray-100">Kelola Mahasiswa</a>
-            <a href="#" class="block py-3 px-6 text-gray-600 hover:bg-gray-100">Kelola Dosen</a>
-            <a href="#" class="block py-3 px-6 text-gray-600 hover:bg-gray-100">Kelola Perusahaan</a>
+            <li><a href="<?= base_url('admin/dashboard') ?>" class="nav-link">Dashboard</a></li>
+            <li><a href="#" class="nav-link">Kelola Mahasiswa</a></li>
+            <li><a href="#" class="nav-link">Kelola Dosen</a></li>
+            <li><a href="#" class="nav-link">Kelola Perusahaan</a></li>
         <?php endif; ?>
 
-        <a href="<?= base_url('auth/logout') ?>" class="block py-3 px-6 text-gray-600 hover:bg-gray-100 mt-4 border-t">
-            Logout
-        </a>
-    </nav>
-</aside>
+        <li class="mt-3">
+            <a href="<?= base_url('auth/logout') ?>" class="nav-link text-danger fw-bold">Logout</a>
+        </li>
+
+    </ul>
+</div>

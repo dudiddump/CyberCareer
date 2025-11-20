@@ -1,45 +1,36 @@
-<div class="theme-toggle">
-  <button id="toggle-dark"
-    class="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 
-           hover:scale-110 hover:rotate-180 transition-all duration-500 shadow-md">
-    🌙
-  </button>
-</div>
-
-<script>
-  const btn = document.getElementById('toggle-dark');
-  const html = document.documentElement;
-
-  // Set awal (cek localStorage)
-  if (localStorage.getItem('theme') === 'dark') {
-    html.classList.add('dark');
-    btn.innerHTML = '☀️';
-  } else {
-    btn.innerHTML = '🌙';
-  }
-
-  // Event toggle
-  btn.addEventListener('click', function () {
-    btn.classList.add('scale-125'); // efek zoom pas ditekan
-    setTimeout(() => btn.classList.remove('scale-125'), 200);
-
-    if (html.classList.contains('dark')) {
-      html.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-      btn.innerHTML = '🌙';
-    } else {
-      html.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-      btn.innerHTML = '☀️';
-    }
-  });
-</script>
-
 <style>
-  .theme-toggle {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    z-index: 1000;
-  }
+    .theme-toggle-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        border: none;
+        background-color: #fff;
+        color: #333;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .theme-toggle-btn:hover {
+        transform: scale(1.1);
+    }
+
+    /* Warna tombol saat dark mode */
+    body.dark .theme-toggle-btn {
+        background-color: #1d3b5e;
+        color: #ffd700; /* Warna kuning matahari */
+    }
 </style>
+
+<a href="<?= base_url('theme/toggle') ?>" class="btn theme-toggle-btn" title="Ganti Tema">
+    <?= ($this->session->userdata('theme') == 'dark') ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>' ?>
+</a>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

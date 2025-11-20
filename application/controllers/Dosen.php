@@ -20,23 +20,19 @@ class Dosen extends CI_Controller {
         }
     }
 
-    public function index()
+        public function index()
     {
         $data['title'] = 'Dashboard Dosen';
-        $data['user'] = [
-            'nama' => $this->session->userdata('nama'),
-            'nim'  => $this->session->userdata('nim')
-        ];
+        $userId = $this->session->userdata('user_id');
+        $data['user'] = $this->db->get_where('users', ['id' => $userId])->row();
 
-        $this->load->view('partials/header', $data);
-        $this->load->view('partials/sidebar', $data);
+        $this->load->view('partials/header_dashboard', $data);
         $this->load->view('dosen/dashboard', $data);
-        $this->load->view('partials/footer');
+        $this->load->view('partials/footer_dashboard');
     }
 
     public function dashboard()
     {
-        // Arahkan ke method index
         $this->index();
     }
 }
