@@ -160,21 +160,25 @@
             </div>
         </div>
         
-        <div class="card border-0 shadow-sm bg-primary text-white position-relative overflow-hidden">
-            <div class="position-absolute top-0 end-0 bg-white opacity-10 rounded-circle" style="width: 100px; height: 100px; margin-top: -30px; margin-right: -30px;"></div>
+        <div class="card card-modern border-0 shadow-sm bg-primary text-white position-relative overflow-hidden">
             
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h6 class="fw-bold opacity-75 mb-0">IPK Terakhir</h6>
-                    <i class="bi bi-mortarboard-fill fs-4 opacity-50"></i>
-                </div>
+            <div class="position-absolute d-flex align-items-center justify-content-center" 
+                 style="width: 150px; height: 150px; top: -20px; right: -20px; 
+                        background: rgba(255, 255, 255, 0.1); 
+                        border-radius: 50%;">
+                 
+                 <i class="bi bi-mortarboard-fill text-white opacity-50" style="font-size: 4rem;"></i>
+            </div>
+            
+            <div class="card-body p-4 position-relative">
+                <h6 class="fw-bold opacity-75 mb-2">IPK Terakhir</h6>
                 
-                <h1 class="fw-bold display-4 mb-0">
+                <h1 class="fw-bold display-3 mb-0">
                     <?= ($user->ipk_terakhir > 0) ? $user->ipk_terakhir : '-' ?>
                 </h1>
                 
-                <div class="border-top border-white border-opacity-25 mt-3 pt-2">
-                    <small class="opacity-75" style="font-size: 0.75rem;">
+                <div class="mt-4 pt-3 border-top border-white border-opacity-25">
+                    <small class="opacity-75">
                         <i class="bi bi-info-circle me-1"></i>Berdasarkan KHS Semester Lalu
                     </small>
                 </div>

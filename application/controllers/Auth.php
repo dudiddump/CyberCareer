@@ -52,7 +52,7 @@ class Auth extends CI_Controller {
                     $this->_redirect_by_role($user->role);
                 } else {
                     // Password Salah
-                    $this->session->set_flashdata('error', 'Password Salah! Coba reset via SQL.');
+                    $this->session->set_flashdata('error', 'Password Salah!');
                     redirect('auth/login');
                 }
             } else {
