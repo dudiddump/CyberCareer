@@ -35,73 +35,63 @@ class User extends CI_Controller {
         $this->load->view('partials/footer_dashboard');
     }
 
-    // ======================================================
-    // 2. PROSES UPDATE DATA DIRI & FILE (FOTO/CV)
-    // ======================================================
     public function update_profil()
     {
         $userId = $this->session->userdata('user_id');
         $user = $this->db->get_where('users', ['id' => $userId])->row();
 
-        // A. DATA YANG BOLEH DIEDIT (Nama & NIM tidak masuk sini)
-        // Alamat juga sudah dihapus sesuai request
         $data_update = [
-            'telepon'  => $this->input->post('telepon', TRUE),
-            'keahlian' => $this->input->post('keahlian', TRUE),
-            'linkedin' => $this->input->post('linkedin', TRUE),
-            'github'   => $this->input->post('github', TRUE)
+            'ipk_terakhir'  => $this->input->post('ipk_terakhir', TRUE), // Sementara bisa edit
+            'tentang_saya'  => $this->input->post('tentang_saya', TRUE),
+            'telepon'       => $this->input->post('telepon', TRUE),
+            'linkedin'      => $this->input->post('linkedin', TRUE),
+            'github'        => $this->input->post('github', TRUE),
+            'website'       => $this->input->post('website', TRUE)
         ];
 
-        // B. LOGIKA UPLOAD FOTO PROFIL
         if (!empty($_FILES['foto']['name'])) {
             $config['upload_path']   = './uploads/foto/';
             $config['allowed_types'] = 'jpg|jpeg|png';
-            $config['max_size']      = 2048; // 2MB
+            $config['max_size']      = 2048; 
             $config['encrypt_name']  = TRUE;
-
             $this->upload->initialize($config);
 
             if ($this->upload->do_upload('foto')) {
                 $upData = $this->upload->data();
                 $data_update['foto'] = $upData['file_name'];
                 
-                // Hapus foto lama (biar server hemat storage)
                 if ($user->foto && file_exists('./uploads/foto/' . $user->foto)) {
                     @unlink('./uploads/foto/' . $user->foto);
                 }
             } else {
                 $this->session->set_flashdata('error', 'Gagal Upload Foto: ' . $this->upload->display_errors());
                 redirect('user/profil');
-                return; // Stop
+                return;
             }
         }
 
-        // C. LOGIKA UPLOAD CV
         if (!empty($_FILES['file_cv']['name'])) {
-            unset($config); // Reset config foto sebelumnya
+            unset($config);
             $config['upload_path']   = './uploads/cv/';
             $config['allowed_types'] = 'pdf|doc|docx';
-            $config['max_size']      = 5120; // 5MB
+            $config['max_size']      = 5120; 
             $config['encrypt_name']  = TRUE;
-
             $this->upload->initialize($config);
 
             if ($this->upload->do_upload('file_cv')) {
                 $upData = $this->upload->data();
                 $data_update['file_cv'] = $upData['file_name'];
                 
-                // Hapus CV lama
                 if ($user->file_cv && file_exists('./uploads/cv/' . $user->file_cv)) {
                     @unlink('./uploads/cv/' . $user->file_cv);
                 }
             } else {
                 $this->session->set_flashdata('error', 'Gagal Upload CV: ' . $this->upload->display_errors());
                 redirect('user/profil');
-                return; // Stop
+                return;
             }
         }
 
-        // D. EKSEKUSI UPDATE KE DATABASE
         $this->db->where('id', $userId);
         $this->db->update('users', $data_update);
 
@@ -109,9 +99,6 @@ class User extends CI_Controller {
         redirect('user/profil');
     }
 
-    // ======================================================
-    // 3. PROSES GANTI PASSWORD
-    // ======================================================
     public function process_change_password()
     {
         $this->form_validation->set_rules('old_password', 'Password Lama', 'required');

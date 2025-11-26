@@ -11,13 +11,12 @@
 <div class="row g-4">
     
     <div class="col-lg-4">
-        
-        <div class="card card-modern text-center p-4 mb-4 position-relative overflow-hidden">
+        <div class="card card-modern text-center p-4 h-100 position-relative overflow-hidden">
             <div class="position-absolute top-0 start-0 w-100" style="height: 100px; background: linear-gradient(135deg, rgba(29,78,216,0.1), rgba(249,115,22,0.1)); opacity: 0.5;"></div>
             
             <div class="position-relative mt-3">
                 <img src="<?= $user->foto ? base_url('uploads/foto/'.$user->foto) : 'https://ui-avatars.com/api/?name='.urlencode($user->nama_lengkap).'&background=random&size=128' ?>" 
-                     class="rounded-circle border border-4 border-white shadow-sm object-fit-cover" 
+                     class="rounded-circle border border-4 border-white shadow-sm object-fit-cover bg-white" 
                      width="120" height="120">
                 
                 <h4 class="fw-bold text-dark mt-3 mb-1"><?= $user->nama_lengkap ?></h4>
@@ -30,11 +29,11 @@
             <div class="text-start mt-4 pt-3 border-top border-light">
                 <div class="d-flex align-items-center mb-3 text-muted small">
                     <i class="bi bi-envelope me-3 fs-5 opacity-50"></i>
-                    <span class="text-truncate"><?= strtolower(str_replace(' ', '.', $user->nama_lengkap)) ?>@student.cyber.ac.id</span>
+                    <span class="text-truncate text-dark fw-medium"><?= $user->nim ?>@cyber-univ.ac.id</span>
                 </div>
                 <div class="d-flex align-items-center mb-3 text-muted small">
                     <i class="bi bi-telephone me-3 fs-5 opacity-50"></i>
-                    <span>+62 812-xxxx-xxxx</span>
+                    <span><?= $user->telepon ? $user->telepon : '-' ?></span>
                 </div>
                 <div class="d-flex align-items-center mb-3 text-muted small">
                     <i class="bi bi-geo-alt me-3 fs-5 opacity-50"></i>
@@ -58,46 +57,25 @@
             </div>
 
             <div class="d-flex justify-content-center gap-2 mt-4">
-                <a href="#" class="btn-icon-soft"><i class="bi bi-globe"></i></a>
-                <a href="#" class="btn-icon-soft"><i class="bi bi-github"></i></a>
-                <a href="#" class="btn-icon-soft"><i class="bi bi-linkedin"></i></a>
+                <?php if($user->website): ?>
+                    <a href="<?= $user->website ?>" target="_blank" class="btn-icon-soft"><i class="bi bi-globe"></i></a>
+                <?php else: ?>
+                    <a href="#" class="btn-icon-soft disabled"><i class="bi bi-globe"></i></a>
+                <?php endif; ?>
+
+                <?php if($user->github): ?>
+                    <a href="<?= $user->github ?>" target="_blank" class="btn-icon-soft"><i class="bi bi-github"></i></a>
+                <?php else: ?>
+                    <a href="#" class="btn-icon-soft disabled"><i class="bi bi-github"></i></a>
+                <?php endif; ?>
+
+                <?php if($user->linkedin): ?>
+                    <a href="<?= $user->linkedin ?>" target="_blank" class="btn-icon-soft"><i class="bi bi-linkedin"></i></a>
+                <?php else: ?>
+                    <a href="#" class="btn-icon-soft disabled"><i class="bi bi-linkedin"></i></a>
+                <?php endif; ?>
             </div>
         </div>
-
-        <div class="card card-modern p-4">
-            <h6 class="section-title"><i class="bi bi-trophy"></i> Pencapaian</h6>
-            
-            <div class="d-flex gap-3 mb-3">
-                <div class="bg-warning bg-opacity-10 p-2 rounded text-warning h-100">
-                    <i class="bi bi-award fs-4"></i>
-                </div>
-                <div>
-                    <div class="fw-bold text-dark small">Juara 1 Hackathon Nasional</div>
-                    <small class="text-muted" style="font-size: 11px;">Des 2024</small>
-                </div>
-            </div>
-            
-            <div class="d-flex gap-3 mb-3">
-                <div class="bg-warning bg-opacity-10 p-2 rounded text-warning h-100">
-                    <i class="bi bi-star fs-4"></i>
-                </div>
-                <div>
-                    <div class="fw-bold text-dark small">Best Final Project 2024</div>
-                    <small class="text-muted" style="font-size: 11px;">Nov 2024</small>
-                </div>
-            </div>
-            
-            <div class="d-flex gap-3">
-                <div class="bg-warning bg-opacity-10 p-2 rounded text-warning h-100">
-                    <i class="bi bi-patch-check fs-4"></i>
-                </div>
-                <div>
-                    <div class="fw-bold text-dark small">Sertifikasi AWS Cloud</div>
-                    <small class="text-muted" style="font-size: 11px;">Okt 2024</small>
-                </div>
-            </div>
-        </div>
-
     </div>
 
     <div class="col-lg-8">
@@ -105,13 +83,12 @@
         <div class="card card-modern p-4 mb-4">
             <h6 class="section-title"><i class="bi bi-person"></i> Tentang Saya</h6>
             <p class="text-muted small mb-0" style="line-height: 1.6;">
-                Mahasiswa Sistem dan Teknologi Informasi yang passionate dalam pengembangan web full-stack dan data science. Aktif dalam organisasi kampus dan memiliki pengalaman dalam memimpin proyek pengembangan perangkat lunak skala kecil hingga menengah.
+                <?= $user->tentang_saya ? nl2br($user->tentang_saya) : 'Belum ada deskripsi diri. Silakan edit profil untuk menambahkan.' ?>
             </p>
         </div>
 
         <div class="card card-modern p-4 mb-4">
             <h6 class="section-title"><i class="bi bi-book"></i> Informasi Akademik</h6>
-            
             <div class="row g-4">
                 <div class="col-md-6">
                     <small class="text-muted d-block mb-1">Nama Lengkap</small>
@@ -131,55 +108,47 @@
                 </div>
                 <div class="col-md-6">
                     <small class="text-muted d-block mb-1">Email Institusi</small>
-                    <div class="fw-bold text-dark"><?= strtolower(str_replace(' ', '', $user->nama_lengkap)) ?>@student.cyber.ac.id</div>
+                    <div class="fw-bold text-primary"><?= $user->nim ?>@cyber-univ.ac.id</div>
                 </div>
                 <div class="col-md-6">
                     <small class="text-muted d-block mb-1">Nomor Telepon</small>
-                    <div class="fw-bold text-dark">+62 812-3456-7890</div>
+                    <div class="fw-bold text-dark"><?= $user->telepon ? $user->telepon : '-' ?></div>
                 </div>
-            </div>
-        </div>
-
-        <div class="card card-modern p-4 mb-4">
-            <h6 class="section-title"><i class="bi bi-bookmark-star"></i> Keahlian</h6>
-            <div class="d-flex flex-wrap gap-2">
-                <span class="badge badge-soft bg-success bg-opacity-10 text-success border border-success border-opacity-25">Web Development</span>
-                <span class="badge badge-soft bg-info bg-opacity-10 text-info border border-info border-opacity-25">UI/UX Design</span>
-                <span class="badge badge-soft bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">Data Analysis</span>
-                <span class="badge badge-soft bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">Project Management</span>
-                <span class="badge badge-soft bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">Public Speaking</span>
             </div>
         </div>
 
         <div class="card card-modern p-4">
             <h6 class="section-title"><i class="bi bi-file-earmark-text"></i> Dokumen</h6>
             
-            <div class="doc-item">
+            <div class="doc-item d-flex align-items-center justify-content-between p-3 border rounded mb-3">
                 <div class="d-flex align-items-center">
-                    <div class="bg-light p-2 rounded me-3 text-danger">
+                    <div class="bg-danger bg-opacity-10 p-2 rounded me-3 text-danger">
                         <i class="bi bi-file-earmark-pdf fs-4"></i>
                     </div>
                     <div>
                         <div class="fw-bold text-dark small">Curriculum Vitae</div>
                         <?php if($user->file_cv): ?>
                             <small class="text-success d-flex align-items-center gap-1" style="font-size: 10px;">
-                                <i class="bi bi-check-circle-fill"></i> Uploaded
+                                <i class="bi bi-check-circle-fill"></i> Sudah Diupload
                             </small>
                         <?php else: ?>
-                            <small class="text-muted" style="font-size: 10px;">Belum diupload</small>
+                            <small class="text-muted" style="font-size: 10px;">Belum ada file</small>
                         <?php endif; ?>
                     </div>
                 </div>
-                <?php if($user->file_cv): ?>
-                    <a href="<?= base_url('uploads/cv/'.$user->file_cv) ?>" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3">Lihat</a>
-                <?php else: ?>
-                    <button class="btn btn-sm btn-outline-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalEditProfil">Upload</button>
-                <?php endif; ?>
+                
+                <div>
+                    <?php if($user->file_cv): ?>
+                        <a href="<?= base_url('uploads/cv/'.$user->file_cv) ?>" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-4">Lihat</a>
+                    <?php else: ?>
+                        <button class="btn btn-sm btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#modalEditProfil">Upload</button>
+                    <?php endif; ?>
+                </div>
             </div>
-
-            <div class="doc-item">
+            
+            <div class="doc-item d-flex align-items-center justify-content-between p-3 border rounded">
                 <div class="d-flex align-items-center">
-                    <div class="bg-light p-2 rounded me-3 text-primary">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded me-3 text-primary">
                         <i class="bi bi-file-earmark-spreadsheet fs-4"></i>
                     </div>
                     <div>
@@ -187,20 +156,9 @@
                         <small class="text-muted" style="font-size: 10px;">Sinkronisasi SIAKAD</small>
                     </div>
                 </div>
-                <button class="btn btn-sm btn-outline-dark rounded-pill px-3">Lihat</button>
-            </div>
-
-            <div class="doc-item">
-                <div class="d-flex align-items-center">
-                    <div class="bg-light p-2 rounded me-3 text-warning">
-                        <i class="bi bi-folder fs-4"></i>
-                    </div>
-                    <div>
-                        <div class="fw-bold text-dark small">Portofolio</div>
-                        <small class="text-muted" style="font-size: 10px;">Belum diupload</small>
-                    </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-4" disabled>Lihat</button>
                 </div>
-                <button class="btn btn-sm btn-outline-dark rounded-pill px-3">Upload</button>
             </div>
 
         </div>
@@ -220,10 +178,10 @@
                     
                     <div class="row g-3">
                         <div class="col-12 text-center mb-3">
-                             <img src="<?= $user->foto ? base_url('uploads/foto/'.$user->foto) : base_url('assets/img/default-avatar.png') ?>" 
-                                  class="rounded-circle mb-2 object-fit-cover shadow-sm" width="100" height="100">
+                             <img src="<?= $user->foto ? base_url('uploads/foto/'.$user->foto) : 'https://ui-avatars.com/api/?name='.urlencode($user->nama_lengkap).'&background=random' ?>" 
+                                  class="rounded-circle mb-2 object-fit-cover shadow-sm" width="90" height="90">
                              <br>
-                             <label class="btn btn-sm btn-outline-primary rounded-pill cursor-pointer">
+                             <label class="btn btn-sm btn-outline-primary rounded-pill cursor-pointer px-3">
                                  <i class="bi bi-camera me-1"></i> Ganti Foto
                                  <input type="file" name="foto" class="d-none" onchange="this.form.submit()">
                              </label>
@@ -231,20 +189,84 @@
 
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted">Nama Lengkap</label>
-                            <input type="text" name="nama_lengkap" class="form-control" value="<?= $user->nama_lengkap ?>">
+                            <input type="text" class="form-control input-modern bg-light" value="<?= $user->nama_lengkap ?>" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Upload CV (PDF)</label>
-                            <input type="file" name="file_cv" class="form-control">
+                            <label class="form-label small fw-bold text-muted">NIM</label>
+                            <input type="text" class="form-control input-modern bg-light" value="<?= $user->nim ?>" readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">IPK Terakhir (Sementara)</label>
+                            <input type="number" step="0.01" name="ipk_terakhir" class="form-control input-modern" value="<?= $user->ipk_terakhir ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Nomor Telepon / WA</label>
+                            <input type="text" name="telepon" class="form-control input-modern" value="<?= $user->telepon ?>" placeholder="+62...">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Tentang Saya</label>
+                            <textarea name="tentang_saya" class="form-control input-modern" rows="3" placeholder="Ceritakan singkat tentang diri Anda..."><?= $user->tentang_saya ?></textarea>
+                        </div>
+
+                        <div class="col-12 border-top pt-2 mt-2">
+                            <label class="form-label small fw-bold text-primary mb-3">Tautan Profil</label>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-globe"></i></span>
+                                        <input type="text" name="website" class="form-control input-modern border-start-0" placeholder="Web Personal" value="<?= $user->website ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-linkedin"></i></span>
+                                        <input type="text" name="linkedin" class="form-control input-modern border-start-0" placeholder="Link LinkedIn" value="<?= $user->linkedin ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-github"></i></span>
+                                        <input type="text" name="github" class="form-control input-modern border-start-0" placeholder="Link GitHub" value="<?= $user->github ?>">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                             <label class="form-label small fw-bold text-muted">Update CV (PDF/DOCX)</label>
+                             <input type="file" name="file_cv" class="form-control input-modern" accept=".pdf,.doc,.docx">
                         </div>
                         
-                        <div class="col-12 border-top pt-3 mt-3">
-                            <h6 class="fw-bold text-dark mb-3">Ganti Password</h6>
+                        <div class="col-12 border-top pt-3 mt-2">
+                             <button type="button" class="btn btn-sm btn-outline-danger w-100 text-start d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#collapsePass">
+                                 <span><i class="bi bi-key me-2"></i>Ganti Password</span>
+                                 <i class="bi bi-chevron-down"></i>
+                             </button>
                         </div>
-                        <div class="col-12 text-end">
-                             <a href="<?= base_url('user/change_password_page') ?>" class="btn btn-sm btn-warning">Ke Menu Ganti Password</a>
-                             <button type="submit" class="btn btn-primary px-4 rounded-pill fw-bold">Simpan Perubahan</button>
-                         </div>
+
+                        <div class="collapse col-12" id="collapsePass">
+                            <div class="card card-modern p-3 bg-light border">
+                                <div class="mb-2">
+                                    <input type="password" name="old_password" class="form-control input-modern" placeholder="Password Lama">
+                                </div>
+                                <div class="mb-2">
+                                    <input type="password" name="new_password" class="form-control input-modern" placeholder="Password Baru (Min 6 karakter)">
+                                </div>
+                                <div class="mb-2">
+                                    <input type="password" name="confirm_password" class="form-control input-modern" placeholder="Ulangi Password Baru">
+                                </div>
+                                <div class="text-end">
+                                    <button type="submit" formaction="<?= base_url('user/process_change_password') ?>" class="btn btn-sm btn-dark">Update Password</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 text-end mt-3 border-top pt-3">
+                             <button type="button" class="btn btn-light border rounded-pill me-2" data-bs-dismiss="modal">Batal</button>
+                             <button type="submit" class="btn btn-primary px-4 rounded-pill fw-bold">Simpan Profil</button>
+                        </div>
                     </div>
 
                 <?= form_close() ?>
