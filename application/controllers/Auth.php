@@ -6,7 +6,7 @@ class Auth extends CI_Controller {
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('M_auth'); 
+        $this->load->library('form_validation');
     }
 
     public function login()
@@ -21,43 +21,34 @@ class Auth extends CI_Controller {
 
     public function process_login()
     {
-        $this->form_validation->set_rules('nim', 'NIM', 'required|trim');
+        $this->form_validation->set_rules('id', 'NIM/NIDN', 'required|trim');
         $this->form_validation->set_rules('password', 'Password', 'required|trim');
 
         if ($this->form_validation->run() == FALSE) {
             $this->load->view('auth/login'); 
         } else {
-            $nim = $this->input->post('nim', TRUE);
+            $id_input = $this->input->post('id', TRUE); 
             $password = $this->input->post('password');
 
-            // Cek user di database
-            $user = $this->M_auth->get_user_by_nim($nim);
+            $user = $this->db->get_where('users', ['id' => $id_input])->row();
 
-            // DEBUGGING: Jika mau liat kenapa gagal, uncomment baris bawah ini
-            // var_dump($user); die;
+            if ($user && password_verify($password, $user->password)) {
+                
+                session_regenerate_id(true);
 
-            if ($user) {
-                // User Ditemukan, Cek Password
-                if (password_verify($password, $user->password)) {
-                    // Password Benar
-                    $session_data = [
-                        'user_id'   => $user->id,
-                        'nim'       => $user->nim,
-                        'nama'      => $user->nama_lengkap,
-                        'role'      => $user->role, // Pastikan di DB role-nya 'mhs'
-                        'logged_in' => TRUE,
-                        'must_change_password' => ($user->default_password_changed == 0)
-                    ];
-                    $this->session->set_userdata($session_data);
-                    $this->_redirect_by_role($user->role);
-                } else {
-                    // Password Salah
-                    $this->session->set_flashdata('error', 'Password Salah!');
-                    redirect('auth/login');
-                }
+                $session_data = [
+                    'user_id'   => $user->id,
+                    'nama'      => $user->nama_lengkap,
+                    'role'      => $user->role,
+                    'logged_in' => TRUE,
+                    'must_change_password' => ($user->default_password_changed == 0)
+                ];
+
+                $this->session->set_userdata($session_data);
+                $this->_redirect_by_role($user->role);
+
             } else {
-                // User Tidak Ditemukan
-                $this->session->set_flashdata('error', 'NIM tidak terdaftar!');
+                $this->session->set_flashdata('error', 'NIM/NIDN atau Password salah!');
                 redirect('auth/login');
             }
         }
@@ -71,14 +62,11 @@ class Auth extends CI_Controller {
 
     private function _redirect_by_role($role)
     {
-        if ($role == 'mhs') {
-            redirect('mahasiswa/dashboard');
-        } elseif ($role == 'dsn') {
-            redirect('dosen/dashboard'); // Pastikan controller Dosen ada
-        } elseif ($role == 'adm') {
-            redirect('admin/dashboard'); // Pastikan controller Admin ada
-        } else {
-            echo "Role tidak dikenali: " . $role;
+        switch ($role) {
+            case 'mhs': redirect('mahasiswa/dashboard'); break;
+            case 'dsn': redirect('dosen/dashboard'); break;
+            case 'adm': redirect('admin/dashboard'); break;
+            default:    redirect('auth/login'); break;
         }
     }
 }

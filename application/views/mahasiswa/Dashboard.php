@@ -1,6 +1,4 @@
 <?php
-// --- LOGIKA HITUNG SEMESTER & AKSES (KHUSUS DASHBOARD) ---
-// Kita taruh sini biar tidak perlu ubah Controller dashboard lagi
 $tahun_masuk = (int) $user->tahun_masuk;
 $tahun_skrg  = (int) date('Y');
 $bulan_skrg  = (int) date('n'); 
@@ -11,11 +9,9 @@ elseif ($bulan_skrg < 3) $semester_sekarang = ($selisih_tahun * 2) - 1;
 else $semester_sekarang = ($selisih_tahun * 2);
 if ($semester_sekarang < 1) $semester_sekarang = 1;
 
-// Cek Status Magang (Query simple via CI Instance di View)
 $ci =& get_instance();
 $magang_aktif = $ci->db->get_where('riwayat_magang', ['mahasiswa_id' => $user->id, 'status' => 'Aktif'])->num_rows() > 0;
 
-// Tentukan Akses
 $akses_terbuka = false;
 if ($semester_sekarang >= 6) $akses_terbuka = true;
 elseif ($semester_sekarang == 5 && $bulan_skrg == 2 && $magang_aktif) $akses_terbuka = true;
@@ -185,7 +181,7 @@ elseif ($semester_sekarang == 5 && $bulan_skrg == 2 && $magang_aktif) $akses_ter
                 
                 <h5 class="fw-bold mt-3 mb-1 text-dark"><?= html_escape($user->nama_lengkap) ?></h5>
                 <div class="text-muted small mb-3">
-                    <div class="fw-semibold text-primary"><?= $user->nim ?></div>
+                    <div class="fw-semibold text-primary"><?= $user->id ?></div>
                     <div><?= $user->prodi ?></div>
                 </div>
                 

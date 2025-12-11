@@ -25,7 +25,6 @@
 
 <div class="card card-modern border-0 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);">
     <div class="card-body p-4 position-relative z-1 text-white">
-        <!-- Baris 1: Navigasi Back & Breadcrumb -->
         <div class="d-flex align-items-center mb-3">
             <a href="<?= base_url('admin/mitra') ?>" class="btn btn-sm btn-light bg-opacity-25 text-white border-0 rounded-pill me-2 px-3" title="Kembali ke Daftar Mitra">
                 <i class="bi bi-arrow-left me-1"></i> Kembali
@@ -33,7 +32,6 @@
             <span class="opacity-75 small text-uppercase ls-1 border-start border-white border-opacity-25 ps-3 ms-1">Kelola Lowongan Magang</span>
         </div>
 
-        <!-- Baris 2: Info Utama Mitra -->
         <div class="d-flex align-items-center">
             <div class="bg-white p-2 rounded-3 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
                 <img src="<?= $mitra->logo ? base_url('assets/img/'.$mitra->logo) : 'https://ui-avatars.com/api/?name='.urlencode($mitra->nama_perusahaan).'&background=random' ?>" class="img-fluid" style="max-height: 100%;">
@@ -51,7 +49,6 @@
             </div>
         </div>
     </div>
-    
     <i class="bi bi-buildings position-absolute top-50 end-0 translate-middle-y me-4 text-white opacity-10" style="font-size: 8rem; pointer-events: none;"></i>
 </div>
 
@@ -127,7 +124,6 @@
     </div>
 </div>
 
-<!-- MODAL ADD (Otomatis ID Perusahaan Terisi) -->
 <div class="modal fade" id="modalAddLoker" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg card-modern">
@@ -182,7 +178,6 @@
     </div>
 </div>
 
-<!-- MODAL EDIT -->
 <div class="modal fade" id="modalEditLoker" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg card-modern">

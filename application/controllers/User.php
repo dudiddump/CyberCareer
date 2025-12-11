@@ -1,28 +1,20 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/**
- * Controller User (Profil, Foto, CV, Password)
- */
 class User extends CI_Controller {
 
     public function __construct()
     {
         parent::__construct();
-        // 1. Cek Login
         if (!$this->session->userdata('logged_in')) {
             redirect('auth/login');
         }
         
-        // 2. Load Library Wajib
         $this->load->helper('form');
         $this->load->library('upload');
         $this->load->library('form_validation');
     }
-
-    // ======================================================
-    // 1. MENAMPILKAN HALAMAN PROFIL
-    // ======================================================
+    
     public function profil()
     {
         $userId = $this->session->userdata('user_id');
@@ -30,7 +22,30 @@ class User extends CI_Controller {
         $data['title'] = 'Kelola Profil - CyberCareer';
         $data['user'] = $this->db->get_where('users', ['id' => $userId])->row();
 
-        $this->load->view('partials/header_dashboard', $data);
+        $tahun_masuk = (int) $data['user']->tahun_masuk;
+        $tahun_skrg  = (int) date('Y');
+        $bulan_skrg  = (int) date('n'); 
+
+        $selisih_tahun = $tahun_skrg - $tahun_masuk;
+        if ($bulan_skrg >= 9) {
+            $semester = ($selisih_tahun * 2) + 1;
+        } elseif ($bulan_skrg < 2) {
+            $semester = ($selisih_tahun * 2) - 1;
+        } else {
+            $semester = ($selisih_tahun * 2);
+        }
+
+        if ($semester < 1) $semester = 1;
+        
+        $data['semester'] = $semester;
+        if (!empty($data['user']->dosen_pembimbing_id)) {
+            $dosen = $this->db->get_where('users', ['id' => $data['user']->dosen_pembimbing_id])->row();
+            $data['nama_dosen'] = $dosen ? $dosen->nama_lengkap : '-';
+        } else {
+            $data['nama_dosen'] = 'Belum Ditentukan';
+        }
+
+        $this->load->view('mahasiswa/menu', $data);
         $this->load->view('user/profil', $data);
         $this->load->view('partials/footer_dashboard');
     }
@@ -41,7 +56,7 @@ class User extends CI_Controller {
         $user = $this->db->get_where('users', ['id' => $userId])->row();
 
         $data_update = [
-            'ipk_terakhir'  => $this->input->post('ipk_terakhir', TRUE), // Sementara bisa edit
+            'ipk_terakhir'  => $this->input->post('ipk_terakhir', TRUE),
             'tentang_saya'  => $this->input->post('tentang_saya', TRUE),
             'telepon'       => $this->input->post('telepon', TRUE),
             'linkedin'      => $this->input->post('linkedin', TRUE),
@@ -52,8 +67,9 @@ class User extends CI_Controller {
         if (!empty($_FILES['foto']['name'])) {
             $config['upload_path']   = './uploads/foto/';
             $config['allowed_types'] = 'jpg|jpeg|png';
-            $config['max_size']      = 2048; 
+            $config['max_size']      = 2048;
             $config['encrypt_name']  = TRUE;
+
             $this->upload->initialize($config);
 
             if ($this->upload->do_upload('foto')) {
@@ -66,7 +82,7 @@ class User extends CI_Controller {
             } else {
                 $this->session->set_flashdata('error', 'Gagal Upload Foto: ' . $this->upload->display_errors());
                 redirect('user/profil');
-                return;
+                return; 
             }
         }
 
@@ -74,8 +90,9 @@ class User extends CI_Controller {
             unset($config);
             $config['upload_path']   = './uploads/cv/';
             $config['allowed_types'] = 'pdf|doc|docx';
-            $config['max_size']      = 5120; 
+            $config['max_size']      = 5120;
             $config['encrypt_name']  = TRUE;
+
             $this->upload->initialize($config);
 
             if ($this->upload->do_upload('file_cv')) {
@@ -88,7 +105,7 @@ class User extends CI_Controller {
             } else {
                 $this->session->set_flashdata('error', 'Gagal Upload CV: ' . $this->upload->display_errors());
                 redirect('user/profil');
-                return;
+                return; 
             }
         }
 
@@ -102,15 +119,10 @@ class User extends CI_Controller {
     public function process_change_password()
     {
         $this->form_validation->set_rules('old_password', 'Password Lama', 'required');
-        $this->form_validation->set_rules('new_password', 'Password Baru', 'required|min_length[6]', [
-            'min_length' => 'Password baru minimal 6 karakter.'
-        ]);
-        $this->form_validation->set_rules('confirm_password', 'Konfirmasi Password', 'required|matches[new_password]', [
-            'matches' => 'Konfirmasi password tidak cocok.'
-        ]);
+        $this->form_validation->set_rules('new_password', 'Password Baru', 'required|min_length[6]');
+        $this->form_validation->set_rules('confirm_password', 'Konfirmasi Password', 'required|matches[new_password]');
 
         if ($this->form_validation->run() == FALSE) {
-            // Jika validasi gagal, kirim error spesifik password
             $this->session->set_flashdata('error_pass', validation_errors('<p class="mb-0">', '</p>'));
             redirect('user/profil');
         } else {
@@ -120,24 +132,17 @@ class User extends CI_Controller {
 
             $user = $this->db->get_where('users', ['id' => $userId])->row();
 
-            // Cek Password Lama
             if (password_verify($oldPassword, $user->password)) {
-                
-                // Hash Password Baru
                 $hashedNewPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-
                 $updateData = [
                     'password' => $hashedNewPassword,
                     'default_password_changed' => 1 
                 ];
-
                 $this->db->where('id', $userId);
                 $this->db->update('users', $updateData);
 
-                // Sukses -> Logout (Best Practice)
                 $this->session->set_flashdata('success', 'Password berhasil diubah! Silakan login ulang.');
                 redirect('auth/logout');
-
             } else {
                 $this->session->set_flashdata('error_pass', 'Password lama salah!');
                 redirect('user/profil');

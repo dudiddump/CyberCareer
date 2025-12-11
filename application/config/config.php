@@ -24,6 +24,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 $config['base_url'] = 'https://stewed-unreverent-chae.ngrok-free.dev/cyber-career/';
+//$config['base_url'] = 'http://localhost/cyber-career/';
 
 /*
 |--------------------------------------------------------------------------

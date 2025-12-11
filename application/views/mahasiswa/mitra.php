@@ -12,7 +12,7 @@
 </div>
 
 <div class="d-flex gap-2 mb-4 overflow-auto pb-2">
-    <button class="btn btn-sm btn-modern bg-blue text-white">Semua</button>
+    <button class="btn btn-sm btn-modern btn-dark border">Semua</button>
     <button class="btn btn-sm btn-modern btn-light border">Technology</button>
     <button class="btn btn-sm btn-modern btn-light border">Finance</button>
     <button class="btn btn-sm btn-modern btn-light border">Creative</button>

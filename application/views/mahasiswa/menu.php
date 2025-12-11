@@ -3,13 +3,21 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $title ?? 'Dashboard Admin' ?></title>
-
+    <title><?= $title ?? 'Dashboard Mahasiswa' ?></title>
+    
+    <!-- 1. Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- 2. Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- 3. Google Fonts (Plus Jakarta Sans) -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 4. jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+    <!-- Custom CSS -->
     <style>
         :root {
             --color-blue: #0d6efd;
@@ -54,17 +62,18 @@
             transition: all 0.2s ease;
         }
         .nav-pills .nav-link:hover {
-            background-color: #eff6ff;
+            background-color: #eff6ff; /* Biru muda saat hover */
             color: var(--color-blue);
-        }    
+        }
         .nav-pills .nav-link.active {
-            background-color: var(--color-blue);
+            background-color: var(--color-blue); /* Kembali ke Biru */
             color: white;
             font-weight: 600;
             box-shadow: 0 4px 6px rgba(13, 110, 253, 0.25);
         }
         .nav-link i { font-size: 1.1rem; }
 
+        /* Card Modern Style */
         .card-modern {
             border: none;
             border-radius: 16px;
@@ -83,6 +92,7 @@
             color: white;
         }
 
+        /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .sidebar-wrapper { transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
             .sidebar-wrapper.show { transform: translateX(0); }
@@ -104,19 +114,21 @@
     
     <!-- SIDEBAR -->
     <div class="sidebar-wrapper p-4">
+        <!-- Logo -->
         <div class="d-flex align-items-center gap-2 mb-5 px-2">
+            <!-- Logo Gambar -->
             <img src="<?= base_url('assets/logo-CU.png') ?>" class="rounded-3 shadow-sm object-fit-cover" style="width: 40px; height: 40px;" alt="Logo">
             
             <div>
                 <h5 class="fw-bold text-dark mb-0">CyberCareer</h5>
-                <small class="text-muted" style="font-size: 11px;">Administrator Panel</small>
+                <small class="text-muted" style="font-size: 11px;">Student Portal</small>
             </div>
         </div>
 
         <!-- Menu Items -->
         <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item">
-                <a href="<?= base_url('admin/dashboard') ?>" class="nav-link <?= ($this->uri->segment(2) == 'dashboard') ? 'active' : '' ?> d-flex align-items-center gap-3">
+                <a href="<?= base_url('mahasiswa/dashboard') ?>" class="nav-link <?= ($this->uri->segment(2) == 'dashboard') ? 'active' : '' ?> d-flex align-items-center gap-3">
                     <i class="bi bi-grid-1x2-fill"></i>
                     <span>Dashboard</span>
                 </a>
@@ -125,24 +137,24 @@
             <li class="nav-label text-uppercase text-muted small fw-bold mt-4 mb-2 px-3" style="font-size: 11px; letter-spacing: 1px;">Akademik</li>
             
             <li class="nav-item">
-                <a href="<?= base_url('admin/mahasiswa') ?>" class="nav-link <?= ($this->uri->segment(2) == 'mahasiswa' || $this->uri->segment(2) == 'riwayat_mahasiswa') ? 'active' : '' ?> d-flex align-items-center gap-3">
-                    <i class="bi bi-people-fill"></i>
-                    <span>Mahasiswa</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="<?= base_url('admin/dosen') ?>" class="nav-link <?= ($this->uri->segment(2) == 'dosen') ? 'active' : '' ?> d-flex align-items-center gap-3">
-                    <i class="bi bi-person-video3"></i>
-                    <span>Dosen</span>
+                <a href="<?= base_url('mahasiswa/logbook') ?>" class="nav-link <?= ($this->uri->segment(2) == 'logbook') ? 'active' : '' ?> d-flex align-items-center gap-3">
+                    <i class="bi bi-journal-text"></i>
+                    <span>Logbook Harian</span>
                 </a>
             </li>
 
-            <li class="nav-label text-uppercase text-muted small fw-bold mt-4 mb-2 px-3" style="font-size: 11px; letter-spacing: 1px;">Industri</li>
+            <li class="nav-label text-uppercase text-muted small fw-bold mt-4 mb-2 px-3" style="font-size: 11px; letter-spacing: 1px;">Karier & Industri</li>
 
             <li class="nav-item">
-                <a href="<?= base_url('admin/mitra') ?>" class="nav-link <?= ($this->uri->segment(2) == 'mitra' || $this->uri->segment(2) == 'detail_mitra') ? 'active' : '' ?> d-flex align-items-center gap-3">
-                    <i class="bi bi-buildings-fill"></i>
+                <a href="<?= base_url('mahasiswa/mitra') ?>" class="nav-link <?= ($this->uri->segment(2) == 'mitra' || $this->uri->segment(2) == 'detail_mitra') ? 'active' : '' ?> d-flex align-items-center gap-3">
+                    <i class="bi bi-buildings"></i>
                     <span>Mitra & Lowongan</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="<?= base_url('mahasiswa/riwayat') ?>" class="nav-link <?= ($this->uri->segment(2) == 'riwayat') ? 'active' : '' ?> d-flex align-items-center gap-3">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Riwayat Karier</span>
                 </a>
             </li>
         </ul>
@@ -150,14 +162,21 @@
         <!-- User Profile Bottom -->
         <div class="mt-auto pt-4 border-top">
             <div class="d-flex align-items-center gap-3 mb-3 px-2">
-                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold border border-primary" style="width: 40px; height: 40px;">
-                    <?= substr($this->session->userdata('nama_lengkap') ?? 'A', 0, 1) ?>
+                <!-- Foto Profil Kecil -->
+                <div class="rounded-circle overflow-hidden border border-primary" style="width: 40px; height: 40px;">
+                    <?php 
+                        $foto = $this->session->userdata('foto'); 
+                        $img_src = $foto ? base_url('uploads/foto/'.$foto) : base_url('assets/img/default-avatar.png');
+                    ?>
+                    <img src="<?= $img_src ?>" class="w-100 h-100 object-fit-cover">
                 </div>
                 <div style="line-height: 1.2; overflow: hidden;">
-                    <div class="fw-bold text-dark text-truncate" style="max-width: 120px;">
-                        <?= $this->session->userdata('nama_lengkap') ?? 'Admin' ?>
+                    <div class="fw-bold text-dark text-truncate">
+                        <?= $this->session->userdata('nama_lengkap') ?>
                     </div>
-                    <small class="text-muted">Administrator</small>
+                    <small class="text-muted text-truncate d-block" style="font-size: 11px;">
+                        <?= $this->session->userdata('id') ?> <!-- Menampilkan NIM -->
+                    </small>
                 </div>
             </div>
             <a href="<?= base_url('auth/logout') ?>" class="btn btn-light text-danger w-100 rounded-pill fw-bold hover-shadow">
@@ -166,4 +185,5 @@
         </div>
     </div>
 
+    <!-- MAIN CONTENT WRAPPER -->
     <div class="main-content w-100">
