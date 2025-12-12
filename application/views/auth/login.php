@@ -20,18 +20,39 @@
                 transition: background 0.3s;
             }
             .card { border: none; border-radius: 16px; }
+            .btn-back {
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                text-decoration: none;
+                color: var(--color-navy-dark);
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.3s ease;
+                z-index: 10;
+            }
+            .btn-back:hover {
+                transform: translateX(-5px);
+                color: #0d6efd; 
+            }
             
-            /* Dark Mode Override */
             body.dark { background-color: var(--color-navy-dark); color: #fff; }
             body.dark .card { background-color: var(--color-card-dark); color: #fff; }
             body.dark .form-control { background-color: #1d3b5e; border-color: #2d4b73; color: #fff; }
             body.dark .form-control::placeholder { color: #aab4be; }
             body.dark .text-muted { color: #a0aec0 !important; }
+            body.dark .btn-back { color: #aab4be; }
+            body.dark .btn-back:hover { color: #fff; }
         </style>
     </head>
 
     <body class="d-flex align-items-center justify-content-center vh-100 <?= ($this->session->userdata('theme') == 'dark') ? 'dark' : '' ?>">
 
+    <a href="<?= base_url() ?>" class="btn-back">
+        <i class="bi bi-arrow-left"></i> Kembali
+    </a>
         <?php $this->load->view('partials/switch_theme'); ?>
 
         <div class="container">

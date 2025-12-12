@@ -11,11 +11,15 @@
 
     <style>
         :root {
-            --color-blue: #1d4ed8;
-            --color-orange: #f97316;
-            --color-soft-white: #f7f9fc;
-            --color-navy-dark: #0a1a2f;
-            --color-card-dark: #102a4c;
+        --color-blue: #1d4ed8;
+        --color-orange: #f97316;
+        --color-soft-white: #f7f9fc;
+        --color-navy-dark: #0a1a2f;
+        --color-card-dark: #102a4c;
+        --soft-blue-bg: #eff6ff;
+        --soft-orange-bg: #fff7ed;
+        --soft-blue-shadow: rgba(59, 130, 246, 0.15);
+        --soft-orange-shadow: rgba(249, 115, 22, 0.2);
         }
 
         body {
@@ -39,17 +43,68 @@
             z-index: 2000;
         }
 
-        body.dark {
-            background: var(--color-navy-dark);
-            color: #d6d6d6;
+        .mitra-card {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: #ffffff;
+            border: 2px solid var(--soft-blue-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px var(--soft-blue-shadow), 0 2px 4px -1px rgba(0,0,0,0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
+        .mitra-card img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+            filter: grayscale(100%);
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+        .mitra-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--color-orange);
+            background-color: var(--soft-orange-bg);
+            box-shadow: 0 10px 15px -3px var(--soft-orange-shadow), 0 4px 6px -2px rgba(0,0,0,0.01);
+        }
+        .mitra-card:hover img {filter: grayscale(0%); opacity: 1;}
+
+        body.dark .card.mitra-card {
+            background-color: #112240 !important;
+            border: 1px solid #233554 !important; 
+            box-shadow: 0 10px 30px -10px rgba(2, 12, 27, 0.7);
+        }
+        body.dark .mitra-card img {
+            filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.5)) grayscale(0%);
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+        body.dark .mitra-card:hover {
+            background-color: #fff1e7ff !important;
+            border-color: var(--color-orange) !important;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(249, 115, 22, 0.2);
+        }
+        body.dark .mitra-card:hover img {opacity: 1; filter: none;}
+
+        body.dark {background: var(--color-navy-dark); color: #d6d6d6;}
         body.dark .navbar-custom { background: rgba(10, 26, 47, 0.85); }
         body.dark .card { background: var(--color-card-dark); color: #fff; border: none; }
         body.dark .text-primary { color: #60A5FA !important; }
         body.dark section.bg-light { background-color: #0d213a !important; }
+        body.dark section.bg-light {background-color: #0d213a !important; color: #e2e8f0;}
+        body.dark .text-muted {color: #a0aec0 !important;}
+        body.dark .navbar-custom {background: rgba(16, 42, 76, 0.9); border-bottom: 1px solid rgba(255,255,255,0.1);}
+        body.dark .navbar-nav .nav-link {color: #e2e8f0;}
+        body.dark .navbar-nav .nav-link:hover {color: #60A5FA;}
 
         .btn-orange { background: var(--color-orange); color: white; border: none; }
         .btn-orange:hover { background: #ea580c; color: white; }
+
         footer { background: #050e1a; color: #fff; }
         #scrollTop { display: none; z-index: 999; }
     </style>
@@ -138,21 +193,33 @@
         </div>
     </section>
 
-    <section id="mitra" class="py-5 bg-light">
+    <section id="mitra" class="py-5 bg-light overflow-hidden">
         <div class="container text-center py-5">
-            <h2 class="fw-bold mb-5 font-grotesk">Mitra Industri Kami</h2>
+            <h2 class="fw-bold mb-5 font-grotesk" data-aos="fade-up">Mitra Industri Kami</h2>
+            
             <div class="row g-4 justify-content-center">
                 <?php 
-                $logos = ['BRI.svg','IBM.webp','DQS.png','Fintech_Indonesia.webp','Meta4sec.png','Allobank.png','BSSN.png']; 
+                $logos = [
+                    'BRI.svg','Allobank.png','BCA.png',
+                    'IBM.webp','DQS.png','Fintech_Indonesia.webp','BSSN.png',
+                    'CNN.png', 'Kompas.png', 'Traveloka.webp',
+                    'Nutrifood.png', 'TheHarvest.jpg'
+                ]; 
+                $delay = 0;
                 foreach ($logos as $img): ?>
-                    <div class="col-6 col-md-3 col-lg-2">
-                        <div class="card p-3 shadow-sm h-100 d-flex align-items-center justify-content-center border-0 hover-up">
-                            <img src="<?= base_url('assets/'.$img) ?>" class="img-fluid" style="max-height: 50px; object-fit: contain;" alt="Mitra">
+                    <div class="col-6 col-md-4 col-lg-2" data-aos="zoom-in" data-aos-delay="<?= $delay ?>">
+                        
+                        <div class="card mitra-card border-0">
+                            <img src="<?= base_url('assets/img/'.$img) ?>" 
+                                class="img-fluid" 
+                                alt="Logo Mitra">
                         </div>
-                    </div>
-                <?php endforeach; ?>
+                        </div>
+                <?php 
+                $delay += 50;
+                endforeach; ?>
             </div>
-            <p class="mt-5 fw-semibold text-primary">Dan masih banyak lagi 🚀</p>
+            <p class="mt-5 fw-semibold text-primary" data-aos="fade-up" data-aos-delay="300">Dan masih banyak lagi 🚀</p>
         </div>
     </section>
 
@@ -163,13 +230,13 @@
                 <div class="col-md-4">
                     <div class="card p-4 shadow-sm h-100 border-0">
                         <p class="fst-italic">“CyberCareer mempermudah jalur karier setelah lulus. Sangat membantu!”</p>
-                        <h6 class="fw-bold text-primary mt-3">Andi — Alumni 2023</h6>
+                        <h6 class="fw-bold text-primary mt-3">Tasya — Alumni 2020</h6>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="card p-4 shadow-sm h-100 border-0">
                         <p class="fst-italic">“Bimbingan dosen jadi lebih cepat dan efisien karena sistem logbook digital.”</p>
-                        <h6 class="fw-bold text-warning mt-3">Siti — Mahasiswa 2024</h6>
+                        <h6 class="fw-bold text-warning mt-3">Ria — Mahasiswa 2022</h6>
                     </div>
                 </div>
                 <div class="col-md-4">
