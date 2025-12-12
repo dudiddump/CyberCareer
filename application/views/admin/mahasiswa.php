@@ -2,43 +2,143 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <style>
-    /* Styling Custom Pagination & Table */
-    .page-item.active .page-link { background-color: var(--color-blue) !important; border-color: var(--color-blue) !important; border-radius: 50%; }
-    .page-link { color: var(--color-blue); border: none; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; margin: 0 2px; }
-    .page-link:hover { background-color: #eff6ff; color: var(--color-orange); }
-    .dataTables_filter, .dataTables_length { display: none; } 
-    
-    /* Switch Custom */
-    .form-check-input-warning:checked { background-color: #ffc107; border-color: #ffc107; }
-    .form-check.form-switch { padding-left: 0; margin-bottom: 0; }
-    .form-check-input { margin-left: 0 !important; float: none; cursor: pointer; }
+    /* --- GLOBAL VARIABLES --- */
+    :root {
+        --color-primary: #0d6efd;
+        --color-orange: #fd7e14;
+    }
 
-    /* Print Mode */
+    /* --- PAGINATION & TABLE UTILS --- */
+    .page-item.active .page-link {
+        background-color: var(--color-primary) !important;
+        border-color: var(--color-primary) !important;
+        border-radius: 50%;
+        color: white !important;
+    }
+    .page-link {
+        color: var(--color-primary);
+        border: none;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 2px;
+        background: transparent;
+    }
+    .page-link:hover {
+        background-color: #eff6ff;
+    }
+    .dataTables_filter, .dataTables_length { display: none; } 
+    table.dataTable { border-collapse: collapse !important; width: 100% !important; margin-top: 0 !important; }
+
+    /* --- INPUT FIELDS --- */
+    .input-modern {
+        border-radius: 50px;
+        padding: 10px 20px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        transition: all 0.3s;
+    }
+    .input-modern:focus {
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+        border-color: var(--color-primary);
+    }
+
+    /* --- DARK MODE STYLING (Soft Slate Theme) --- */
+    body.dark .text-dark { color: #f1f5f9 !important; }
+    body.dark .text-muted { color: #94a3b8 !important; }
+    body.dark .bg-light { background-color: #334155 !important; color: #fff; }
+    
+    /* Dark Mode Table */
+    body.dark .table { color: #cbd5e1; border-color: #334155; }
+    body.dark .table thead th {
+        background-color: #1e293b;
+        color: #f8fafc;
+        border-bottom: 1px solid #475569;
+    }
+    body.dark .table tbody td {
+        background-color: #1e293b;
+        border-bottom: 1px solid #334155;
+    }
+    body.dark .table-hover tbody tr:hover td {
+        background-color: #334155; /* Highlight row */
+    }
+
+    /* Dark Mode Form Elements */
+    body.dark .form-control, 
+    body.dark .form-select {
+        background-color: #1e293b;
+        border-color: #475569;
+        color: #fff;
+    }
+    body.dark .form-control:focus, 
+    body.dark .form-select:focus {
+        border-color: var(--color-primary);
+        background-color: #1e293b;
+    }
+    body.dark .form-control::placeholder { color: #64748b; }
+
+    /* Dark Mode Modal */
+    body.dark .modal-content { background-color: #1e293b; border: 1px solid #334155; color: #fff; }
+    body.dark .modal-header { border-bottom-color: #334155; }
+    body.dark .modal-footer { border-top-color: #334155; }
+    body.dark .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+    body.dark .nav-tabs .nav-link { color: #94a3b8; }
+    body.dark .nav-tabs .nav-link.active { background-color: #1e293b; border-color: #334155 #334155 #1e293b; color: #fff; }
+
+    /* Dark Mode Pagination */
+    body.dark .page-link { color: #cbd5e1; }
+    body.dark .page-link:hover { background-color: #334155; color: #fff; }
+    body.dark .page-item.active .page-link { background-color: var(--color-primary); color: #fff; }
+
+    /* --- PRINT MODE --- */
     @media print {
         .sidebar-wrapper, .navbar, .d-print-none, .dataTables_paginate, .dataTables_info { display: none !important; }
         .main-content { margin: 0 !important; padding: 0 !important; width: 100% !important; }
-        body { background-color: white !important; font-size: 12px; }
+        body { background-color: white !important; color: black !important; }
         .card { border: none !important; box-shadow: none !important; }
         .table th:last-child, .table td:last-child { display: none !important; }
     }
 </style>
 
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 d-print-none">
-    <div class="mb-3 mb-md-0">
+<div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4 d-print-none gap-3">
+    <div class="mb-2 mb-lg-0">
         <h2 class="fw-bold text-dark mb-0">Data Mahasiswa</h2>
         <p class="text-muted mb-0 small">Kelola data akademik dan monitoring magang.</p>
     </div>
-    <div class="d-flex gap-2">
-        <div class="position-relative" style="width: 250px;">
+
+    <div class="d-flex flex-column flex-sm-row gap-2">
+        <select id="filterProdi" class="form-select input-modern rounded-pill" style="min-width: 160px;">
+            <option value="">Semua Prodi</option>
+            <option value="Sistem Informasi">Sistem Informasi</option>
+            <option value="Sistem dan Teknologi Informasi">Sistem & Tek. Informasi</option>
+            <option value="Informatika">Informatika</option>
+            <option value="Bisnis Digital">Bisnis Digital</option>
+        </select>
+
+        <select id="filterAngkatan" class="form-select input-modern rounded-pill" style="min-width: 100px; width: 110px; flex-shrink: 0;">
+            <option value="">Thn</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+        </select>
+
+        <div class="position-relative flex-grow-1" style="min-width: 250px;">
             <i class="bi bi-search position-absolute text-muted" style="top: 10px; left: 15px; font-size: 0.9rem;"></i>
-            <input type="text" id="customSearch" class="form-control input-modern ps-5 rounded-pill" placeholder="Cari Nama atau NIM...">
+            <input type="text" id="customSearch" class="form-control input-modern ps-5 rounded-pill w-100" placeholder="Cari Nama/NIM...">
         </div>
-        <button class="btn btn-primary rounded-pill fw-bold text-nowrap px-4" data-bs-toggle="modal" data-bs-target="#modalAddMhs">
-            <i class="bi bi-plus-lg me-1"></i> Baru
-        </button>
-        <button onclick="window.print()" class="btn btn-outline-primary rounded-pill px-3" title="Cetak Data">
-            <i class="bi bi-printer"></i>
-        </button>
+
+        <div class="d-flex gap-2 flex-shrink-0">
+            <button class="btn btn-primary rounded-pill fw-bold px-3" data-bs-toggle="modal" data-bs-target="#modalAddMhs">
+                <i class="bi bi-plus-lg"></i>
+            </button>
+            <button onclick="window.print()" class="btn btn-outline-primary rounded-pill px-3" title="Cetak Data">
+                <i class="bi bi-printer"></i>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -62,21 +162,24 @@
 <?php endif; ?>
 
 <div class="card card-modern overflow-hidden" style="min-height: 400px;">
-    <div class="table-responsive p-3">
+    <div class="table-responsive p-0">
         <table class="table align-middle mb-0 w-100" id="tableMhs">
             <thead class="bg-light">
                 <tr>
-                    <th class="ps-4 py-3 text-secondary small fw-bold text-uppercase border-bottom border-primary" width="30%">Mahasiswa</th>
-                    <th class="text-secondary small fw-bold text-center text-uppercase border-bottom border-primary">Program Studi</th>
-                    <th class="text-secondary small fw-bold text-uppercase border-bottom border-primary">Pembimbing</th>
-                    <th class="text-secondary small fw-bold text-uppercase border-bottom border-primary d-print-none">Magang</th>
-                    <th class="text-secondary small fw-bold text-center text-uppercase border-bottom border-primary d-print-none">Kontak</th>
-                    <th class="text-end pe-4 text-secondary small fw-bold text-uppercase border-bottom border-primary d-print-none">Aksi</th>
+                    <th class="ps-4 py-3 text-secondary small fw-bold text-uppercase" width="30%">Mahasiswa</th>
+                    <th class="text-secondary small fw-bold text-center text-uppercase">Program Studi</th>
+                    <th class="text-secondary small fw-bold text-uppercase">Pembimbing</th>
+                    <th class="text-secondary small fw-bold text-uppercase d-print-none">Magang</th>
+                    <th class="text-secondary small fw-bold text-center text-uppercase d-print-none">Kontak</th>
+                    <th class="text-end pe-4 text-secondary small fw-bold text-uppercase d-print-none">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($mahasiswa as $m): ?>
-                <tr class="mhs-row" style="border-bottom: 1px solid var(--color-blue) !important;">
+                <tr class="mhs-row" 
+                    data-prodi="<?= $m->prodi ?>" 
+                    data-angkatan="<?= $m->tahun_masuk ?>">
+                    
                     <td class="ps-4 py-3">
                         <div class="d-flex align-items-center">
                             <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3 text-primary fw-bold flex-shrink-0 d-print-none" style="width: 40px; height: 40px;">
@@ -85,12 +188,16 @@
                             <div style="min-width: 0;">
                                 <div class="fw-bold text-dark mhs-name text-wrap"><?= $m->nama_lengkap ?></div>
                                 <div class="text-muted mhs-nim font-monospace small text-primary"><?= $m->id ?></div>
+                                <span class="badge bg-light text-secondary border rounded-pill d-md-none mt-1" style="font-size: 9px;"><?= $m->tahun_masuk ?></span>
                             </div>
                         </div>
                     </td>
+                    
                     <td class="text-center">
                         <div class="small text-muted mt-1"><?= $m->prodi ?></div>
+                        <div class="small text-muted" style="font-size: 10px;">Angkatan <?= $m->tahun_masuk ?></div>
                     </td>
+                    
                     <td>
                         <?php if($m->nama_dosen): ?>
                             <div class="fw-medium text-dark small mb-1"><?= $m->nama_dosen ?></div>
@@ -98,6 +205,7 @@
                             <span class="text-danger small fst-italic">Belum ada</span>
                         <?php endif; ?>
                     </td>
+
                     <td class="d-print-none">
                         <div class="d-flex flex-column align-items-start gap-1">
                             <?php if($m->magang_aktif > 0): ?>
@@ -110,6 +218,7 @@
                             <a href="<?= base_url('admin/riwayat_mahasiswa/'.$m->id) ?>" class="btn btn-sm btn-link p-0 text-decoration-none fw-bold" style="font-size: 11px;">Lihat Detail <i class="bi bi-arrow-right"></i></a>
                         </div>
                     </td>
+
                     <td class="text-center d-print-none">
                         <button class="btn btn-sm btn-outline-dark rounded-pill px-3 btn-contact" 
                                 data-nama="<?= $m->nama_lengkap ?>"
@@ -178,10 +287,10 @@
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="edit-akademik">
                             <div class="row g-3">
-                                <div class="col-md-6"><label class="form-label small fw-bold text-dark">NIM</label><input type="text" name="nim" id="edit_nim" class="form-control input-modern" required></div>
-                                <div class="col-md-6"><label class="form-label small fw-bold text-dark">Angkatan</label><input type="number" name="tahun_masuk" id="edit_tahun" class="form-control input-modern" required></div>
-                                <div class="col-12"><label class="form-label small fw-bold text-dark">Nama Lengkap</label><input type="text" name="nama_lengkap" id="edit_nama" class="form-control input-modern" required></div>
-                                <div class="col-12"><label class="form-label small fw-bold text-dark">Program Studi</label><select name="prodi" id="edit_prodi" class="form-select input-modern" required><option value="Sistem dan Teknologi Informasi">Sistem dan Teknologi Informasi</option><option value="Informatika">Informatika</option><option value="Sistem Informasi">Sistem Informasi</option><option value="Bisnis Digital">Bisnis Digital</option></select></div>
+                                <div class="col-md-6"><label class="form-label small fw-bold text-muted">NIM</label><input type="text" name="nim" id="edit_nim" class="form-control input-modern" required></div>
+                                <div class="col-md-6"><label class="form-label small fw-bold text-muted">Angkatan</label><input type="number" name="tahun_masuk" id="edit_tahun" class="form-control input-modern" required></div>
+                                <div class="col-12"><label class="form-label small fw-bold text-muted">Nama Lengkap</label><input type="text" name="nama_lengkap" id="edit_nama" class="form-control input-modern" required></div>
+                                <div class="col-12"><label class="form-label small fw-bold text-muted">Program Studi</label><select name="prodi" id="edit_prodi" class="form-select input-modern" required><option value="Sistem dan Teknologi Informasi">Sistem dan Teknologi Informasi</option><option value="Informatika">Informatika</option><option value="Sistem Informasi">Sistem Informasi</option><option value="Bisnis Digital">Bisnis Digital</option></select></div>
                                 <div class="col-12 border-top pt-2 mt-1"><label class="form-label small fw-bold text-primary">IPK Terakhir</label><input type="number" step="0.01" name="ipk_terakhir" id="edit_ipk" class="form-control input-modern"></div>
                                 <div class="col-12"><label class="form-label small fw-bold text-primary">Dosen Pembimbing</label><select name="dosen_pembimbing_id" id="edit_dosen" class="form-select input-modern"><option value="">-- Pilih Dosen --</option><?php foreach($dosen_list as $d): ?><option value="<?= $d->id ?>"><?= $d->nama_lengkap ?></option><?php endforeach; ?></select></div>
                             </div>
@@ -199,10 +308,10 @@
                         <div class="tab-pane fade" id="edit-akun">
                             <div class="d-flex justify-content-between align-items-center p-3 border rounded bg-white shadow-sm mb-3">
                                 <div><h6 class="fw-bold text-warning mb-0">Reset Password</h6><small class="text-muted">Kembalikan ke default?</small></div>
-                                <div class="form-check form-switch m-0"><input class="form-check-input form-check-input-warning" type="checkbox" name="reset_password" value="1" id="checkResetPass" style="width: 3em; height: 1.5em; cursor: pointer;"></div>
+                                <div class="form-check form-switch m-0"><input class="form-check-input" type="checkbox" name="reset_password" value="1" id="checkResetPass" style="width: 3em; height: 1.5em;"></div>
                             </div>
                             <div class="d-flex justify-content-between align-items-center p-3 border border-danger bg-danger bg-opacity-10 rounded shadow-sm">
-                                <div><h6 class="fw-bold text-danger mb-0">Hapus Akun</h6><small class="text-danger opacity-75">Data akan hilang.</small></div>
+                                <div><h6 class="fw-bold text-danger mb-0">Hapus Akun</h6><small class="text-danger opacity-75">Data akan hilang permanen.</small></div>
                                 <div><a href="#" id="btnDeleteModal" class="btn btn-sm btn-danger rounded-pill fw-bold px-3" onclick="return confirm('Yakin hapus?')"><i class="bi bi-trash me-1"></i> Hapus</a></div>
                             </div>
                         </div>
@@ -210,7 +319,7 @@
                 </div>
                 <div class="modal-footer border-top">
                     <button type="button" class="btn btn-light border rounded-pill" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary px-4 rounded-pill fw-bold">Simpan</button>
+                    <button type="submit" class="btn btn-primary px-4 rounded-pill fw-bold">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
@@ -226,11 +335,11 @@
             </div>
             <form action="<?= base_url('admin/tambah_mahasiswa') ?>" method="POST">
                 <div class="modal-body p-4">
-                    <div class="alert alert-info small py-2 mb-4 border-0 bg-opacity-10 bg-info text-info fw-bold">Password default: CyberCareer25</div>
+                    <div class="alert alert-info small py-2 mb-4 border-0 bg-opacity-10 bg-info text-info fw-bold"><i class="bi bi-info-circle me-1"></i> Password default: CyberCareer25</div>
                     <div class="row g-3">
                         <div class="col-md-6"><label class="form-label small fw-bold text-muted">NIM <span class="text-danger">*</span></label><input type="text" name="nim" class="form-control input-modern" required></div>
                         <div class="col-md-6"><label class="form-label small fw-bold text-muted">Angkatan <span class="text-danger">*</span></label><input type="number" name="tahun_masuk" class="form-control input-modern" value="<?= date('Y') ?>" required></div>
-                        <div class="col-12"><label class="form-label small fw-bold text-muted">Nama</label><input type="text" name="nama_lengkap" class="form-control input-modern" required></div>
+                        <div class="col-12"><label class="form-label small fw-bold text-muted">Nama Lengkap</label><input type="text" name="nama_lengkap" class="form-control input-modern" required></div>
                         <div class="col-12"><label class="form-label small fw-bold text-muted">Prodi</label><select name="prodi" class="form-select input-modern" required><option value="Sistem dan Teknologi Informasi">Sistem dan Teknologi Informasi</option><option value="Informatika">Informatika</option><option value="Sistem Informasi">Sistem Informasi</option><option value="Bisnis Digital">Bisnis Digital</option></select></div>
                         <div class="col-12"><label class="form-label small fw-bold text-muted">Pembimbing</label><select name="dosen_pembimbing_id" class="form-select input-modern"><option value="">-- Belum --</option><?php foreach($dosen_list as $d): ?><option value="<?= $d->id ?>"><?= $d->nama_lengkap ?></option><?php endforeach; ?></select></div>
                     </div>
@@ -243,20 +352,48 @@
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
 <script>
 $(document).ready(function() {
-    // 1. Inisialisasi DataTables
+    
+    // 1. Custom Filter Logic
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            var selectedProdi = $('#filterProdi').val();
+            var selectedAngkatan = $('#filterAngkatan').val();
+            
+            var rowNode = settings.aoData[dataIndex].nTr;
+            var mhsProdi = $(rowNode).attr('data-prodi') || "";
+            var mhsAngkatan = $(rowNode).attr('data-angkatan') || "";
+
+            var prodiMatch = (selectedProdi === "" || mhsProdi === selectedProdi);
+            var angkatanMatch = (selectedAngkatan === "" || mhsAngkatan === selectedAngkatan);
+
+            return prodiMatch && angkatanMatch;
+        }
+    );
+
+    // 2. Initialize DataTables
     var table = $('#tableMhs').DataTable({
-        "pageLength": 5,
+        "pageLength": 10,
         "lengthChange": false,
-        "dom": 'rtip', // Hilangkan search bawaan
-        "language": { "paginate": { "next": ">", "previous": "<" }, "zeroRecords": "Data tidak ditemukan" }
+        "dom": 'rtip',
+        "ordering": false, 
+        "language": { 
+            "paginate": { "next": "<i class='bi bi-chevron-right'></i>", "previous": "<i class='bi bi-chevron-left'></i>" }, 
+            "zeroRecords": "<div class='text-center py-5 text-muted'><i class='bi bi-search display-6 d-block mb-2 opacity-25'></i>Data tidak ditemukan</div>",
+            "info": "Menampilkan _START_ s/d _END_ dari _TOTAL_ mahasiswa"
+        }
     });
 
-    // 2. Custom Search
+    // 3. Events
     $('#customSearch').on('keyup', function() { table.search(this.value).draw(); });
+    $('#filterProdi, #filterAngkatan').on('change', function() { table.draw(); });
 
-    // 3. Tombol Kontak
+    // 4. Contact Modal
     $(document).on('click', '.btn-contact', function() {
         const nama = $(this).data('nama');
         const prodi = $(this).data('prodi');
@@ -291,7 +428,7 @@ $(document).ready(function() {
         new bootstrap.Modal(document.getElementById('modalContact')).show();
     });
 
-    // 4. Tombol Edit
+    // 5. Edit Modal
     $(document).on('click', '.btn-edit', function() {
         const id = $(this).data('id');
         $('#checkResetPass').prop('checked', false);

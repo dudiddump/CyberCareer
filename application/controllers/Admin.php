@@ -165,13 +165,14 @@ class Admin extends CI_Controller {
     public function riwayat_mahasiswa($id_mahasiswa)
     {
         $data['mhs'] = $this->db->get_where('users', ['id' => $id_mahasiswa])->row();
-        if(!$data['mhs']) show_404();
 
-        $this->db->select('riwayat_magang.*, perusahaan.nama_perusahaan, perusahaan.logo');
+        if (!$data['mhs']) show_404();
+
+        $this->db->select('riwayat_magang.*, perusahaan.nama_perusahaan');
         $this->db->from('riwayat_magang');
         $this->db->join('perusahaan', 'perusahaan.id = riwayat_magang.perusahaan_id');
-        $this->db->where('mahasiswa_id', $id_mahasiswa);
-        $this->db->order_by('tgl_mulai', 'DESC');
+        $this->db->where('riwayat_magang.mahasiswa_id', $id_mahasiswa);
+        $this->db->order_by('riwayat_magang.tgl_mulai', 'DESC');
         $data['riwayat'] = $this->db->get()->result();
 
         $this->db->select('logbook.*, perusahaan.nama_perusahaan');
@@ -181,54 +182,50 @@ class Admin extends CI_Controller {
         $this->db->order_by('logbook.tanggal', 'DESC');
         $data['logbooks'] = $this->db->get()->result();
 
-        $data['title'] = 'Detail Riwayat - ' . $data['mhs']->nama_lengkap;
-        
+        $this->db->order_by('nama_perusahaan', 'ASC');
+        $data['mitra_list'] = $this->db->get('perusahaan')->result();
+
+        $data['title'] = 'Detail Mahasiswa - ' . $data['mhs']->nama_lengkap;
+
         $this->load->view('partials/header', $data);
-        $this->load->view('partials/sidebar_adm'); 
-        $this->load->view('admin/mahasiswa', $data);
-        echo '</div>'; 
+        $this->load->view('partials/sidebar_adm');
+        $this->load->view('admin/detail_riwayat', $data);
+        echo '</div>';
         $this->load->view('partials/footer');
     }
-
+    
     public function tambah_riwayat_mhs()
     {
         $id_mahasiswa = $this->input->post('id_mahasiswa');
-        $nama_perusahaan = $this->input->post('nama_perusahaan'); 
-
-        $perusahaan = $this->db->get_where('perusahaan', ['nama_perusahaan' => $nama_perusahaan])->row();
-
-        if ($perusahaan) {
-            $perusahaan_id = $perusahaan->id;
-        } else {
-            $data_pt = [
-                'nama_perusahaan' => $nama_perusahaan,
-                'alamat'          => $this->input->post('lokasi'),
-                'industri'        => 'Lainnya'
-            ];
-            $this->db->insert('perusahaan', $data_pt);
-            $perusahaan_id = $this->db->insert_id();
-        }
 
         $data = [
             'mahasiswa_id'  => $id_mahasiswa,
-            'perusahaan_id' => $perusahaan_id,
+            'perusahaan_id' => $this->input->post('perusahaan_id'),
             'posisi'        => $this->input->post('posisi'),
             'lokasi'        => $this->input->post('lokasi'),
             'tgl_mulai'     => $this->input->post('tgl_mulai'),
             'tgl_selesai'   => ($this->input->post('status') == 'Aktif') ? NULL : $this->input->post('tgl_selesai'),
-            'status'        => $this->input->post('status')
+            'status'        => $this->input->post('status') ?? 'Selesai'
         ];
 
         $this->db->insert('riwayat_magang', $data);
         $this->session->set_flashdata('success', 'Riwayat magang berhasil ditambahkan.');
-        redirect('admin/riwayat_mahasiswa/' . $id_mahasiswa);
+        redirect('admin/detail_riwayat/' . $id_mahasiswa);
     }
     
-    public function hapus_riwayat($id)
+    public function hapus_riwayat($id_riwayat)
     {
-        $this->db->delete('riwayat_magang', ['id' => $id]);
-        $this->session->set_flashdata('success', 'Riwayat dihapus.');
-        redirect($_SERVER['HTTP_REFERER']);
+        $riwayat = $this->db->get_where('riwayat_magang', ['id' => $id_riwayat])->row();
+        
+        if ($riwayat) {
+            $id_mhs = $riwayat->mahasiswa_id;
+            $this->db->delete('riwayat_magang', ['id' => $id_riwayat]);
+            $this->session->set_flashdata('success', 'Data riwayat berhasil dihapus.');
+            
+            redirect('admin/detail_riwayat/' . $id_mhs);
+        } else {
+            redirect('admin/mahasiswa');
+        }
     }
 
 
