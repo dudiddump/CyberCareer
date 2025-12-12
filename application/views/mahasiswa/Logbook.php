@@ -215,7 +215,6 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
     $(document).ready(function() {
         $('.btn-edit').on('click', function() {
@@ -244,5 +243,33 @@
         });
     });
     </script>
+    
+    <style>
+        body.dark .modal-content {
+            background-color: #1e293b;
+            color: #f1f5f9;
+        }
+        body.dark .modal-title, 
+        body.dark .form-label {
+            color: #f1f5f9 !important;
+        }
+        body.dark .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+        body.dark .form-control {
+            background-color: #334155;
+            border-color: #475569;
+            color: white;
+        }
+        body.dark .form-control:read-only {
+            background-color: #1e293b; /* Lebih gelap untuk readonly */
+            color: #94a3b8;
+        }
+        body.dark .form-control:focus {
+            background-color: #334155;
+            border-color: var(--color-primary);
+            color: white;
+        }
+    </style>
 
 <?php endif; ?>

@@ -13,12 +13,12 @@
 <?php endif; ?>
 
 <?php if(empty($riwayat_list)): ?>
-    <div class="card border-0 shadow-sm py-5 mt-4">
+    <div class="card card-modern border-0 shadow-sm py-5 mt-4">
         <div class="card-body text-center">
             <div class="bg-light rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
                 <i class="bi bi-briefcase fs-1 text-muted opacity-50"></i>
             </div>
-            <h5 class="text-muted fw-bold">Belum Ada Pengalaman</h5>
+            <h5 class="fw-bold text-dark">Belum Ada Pengalaman</h5>
             <p class="text-muted small mb-4">Tambahkan pengalaman magang, kerja praktik, atau freelance kamu disini.</p>
             <button class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#modalTambah">
                 + Tambah Sekarang
@@ -30,15 +30,15 @@
     <div class="row g-3">
         <?php foreach($riwayat_list as $r): ?>
         <div class="col-12">
-            <div class="card border-0 shadow-sm hover-card transition-all">
+            <div class="card card-modern border-0 shadow-sm hover-card transition-all">
                 <div class="card-body p-4">
                     <div class="row align-items-center">
                         
                         <div class="col-auto">
-                             <a href="<?= base_url('mahasiswa/detail_mitra/'.$r->perusahaan_id) ?>">
-                                <div class="bg-white border rounded p-2 shadow-sm" style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
+                            <a href="<?= base_url('mahasiswa/detail_mitra/'.$r->perusahaan_id) ?>">
+                                <div class="logo-container bg-white border rounded p-2 shadow-sm" style="width: 64px; height: 64px; display: flex; align-items: center; justify-content: center;">
                                     <img src="<?= $r->logo ? base_url('assets/img/'.$r->logo) : 'https://ui-avatars.com/api/?name='.urlencode($r->nama_perusahaan).'&background=random&size=128' ?>" 
-                                         class="img-fluid" style="max-height: 40px;">
+                                         class="img-fluid object-fit-contain" style="max-height: 40px;">
                                 </div>
                             </a>
                         </div>
@@ -60,7 +60,7 @@
                         </div>
                     </div>
                     
-                    <hr class="my-3 border-light">
+                    <hr class="my-3 border-light-subtle">
 
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="text-muted small">
@@ -73,11 +73,11 @@
                         </div>
 
                         <?php if($r->status == 'Aktif'): ?>
-                            <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle rounded-pill px-3">
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-10 rounded-pill px-3">
                                 Masih Bekerja
                             </span>
                         <?php else: ?>
-                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary-subtle rounded-pill px-3">
+                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-10 rounded-pill px-3">
                                 Selesai
                             </span>
                         <?php endif; ?>
@@ -90,12 +90,11 @@
     </div>
 <?php endif; ?>
 
-
 <div class="modal fade" id="modalTambah" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
             <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold">Tambah Pengalaman</h5>
+                <h5 class="modal-title fw-bold text-dark">Tambah Pengalaman</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="<?= base_url('mahasiswa/tambah_riwayat') ?>" method="POST">
@@ -115,7 +114,7 @@
                                 <option value="<?= $pt->nama_perusahaan ?>">
                             <?php endforeach; ?>
                         </datalist>
-                        <div class="form-text small">Jika perusahaan belum ada, ketik saja namanya.</div>
+                        <div class="form-text small text-muted">Jika perusahaan belum ada, ketik saja namanya.</div>
                     </div>
 
                     <div class="mb-3">
@@ -139,6 +138,7 @@
                     </div>
 
                     <div class="form-check mb-3">
+                        <input type="hidden" name="status" value="Selesai">
                         <input class="form-check-input" type="checkbox" id="cekAktif" name="status" value="Aktif">
                         <label class="form-check-label small fw-bold text-dark" for="cekAktif">
                             Saya masih bekerja di posisi ini
@@ -159,9 +159,40 @@
     .hover-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
-        border-color: var(--bs-primary) !important;
+        border-color: var(--color-primary) !important;
     }
     .transition-all { transition: all 0.3s ease; }
+
+    /* --- MODAL DARK MODE FIX --- */
+    body.dark .modal-content {
+        background-color: #1e293b;
+        color: #f1f5f9;
+    }
+    body.dark .modal-title, 
+    body.dark .form-label, 
+    body.dark .form-check-label {
+        color: #f1f5f9 !important;
+    }
+    body.dark .text-secondary {
+        color: #94a3b8 !important;
+    }
+    body.dark .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+    body.dark .form-control {
+        background-color: #334155;
+        border-color: #475569;
+        color: white;
+    }
+    body.dark .form-control:focus {
+        background-color: #334155;
+        border-color: var(--color-primary);
+        color: white;
+    }
+    /* Fix date input icon color in Webkit browsers */
+    body.dark input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
 </style>
 
 <script>
@@ -171,11 +202,11 @@
     cekAktif.addEventListener('change', function() {
         if(this.checked) {
             inputSelesai.disabled = true;
-            inputSelesai.value = ''; // Kosongkan tanggal
-            inputSelesai.removeAttribute('required'); // Tidak wajib
+            inputSelesai.value = ''; 
+            inputSelesai.removeAttribute('required'); 
         } else {
             inputSelesai.disabled = false;
-            inputSelesai.setAttribute('required', true); // Wajib lagi
+            inputSelesai.setAttribute('required', true); 
         }
     });
 </script>

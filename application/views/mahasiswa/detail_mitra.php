@@ -112,13 +112,6 @@
                         <small class="text-muted">Mahasiswa/Alumni bekerja disini</small>
                     </div>
                 </div>
-
-                <div class="p-3 bg-light rounded border border-light-subtle text-center">
-                    <small class="text-muted fst-italic">
-                        "Tempat yang bagus untuk memulai karier di bidang teknologi."
-                    </small>
-                    <div class="mt-2 fw-bold small text-dark">- Alumni 2023</div>
-                </div>
             </div>
         </div>
 

@@ -30,14 +30,14 @@ elseif ($semester_sekarang == 5 && $bulan_skrg == 2 && $magang_aktif) $akses_ter
 </div>
 
 <?php if ($this->session->userdata('must_change_password')): ?>
-    <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
+    <div id="securityAlert" class="alert alert-warning border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
         <div class="fs-1 text-warning me-3">
             <i class="bi bi-exclamation-triangle-fill"></i>
         </div>
         <div>
-            <h6 class="fw-bold mb-1">Peringatan Keamanan!</h6>
+            <h6 class="fw-bold mb-1 text-alert-danger">Peringatan Keamanan!</h6>
             <span class="small">Anda masih menggunakan password default. Demi keamanan akun, segera 
-            <a href="<?= base_url('user/profil') ?>" class="fw-bold text-dark text-decoration-underline">ganti password Anda</a>.</span>
+            <a href="<?= base_url('user/profil') ?>" class="fw-bold text-decoration-underline text-alert-danger">ganti password Anda</a>.</span>
         </div>
     </div>
 <?php endif; ?>
@@ -219,7 +219,7 @@ elseif ($semester_sekarang == 5 && $bulan_skrg == 2 && $magang_aktif) $akses_ter
             <div class="card-body p-4">
                 <h6 class="fw-bold text-dark mb-2">Butuh Bantuan?</h6>
                 <p class="text-muted small mb-3">Hubungi dosen pembimbing atau admin jika ada kendala teknis.</p>
-                <a href="#" class="btn btn-light btn-sm w-100 text-primary fw-bold border rounded-pill">
+                <a href="#" class="btn btn-success btn-sm w-100 text-primary fw-bold border rounded-pill">
                     <i class="bi bi-whatsapp me-1"></i> Hubungi Admin
                 </a>
             </div>
@@ -235,5 +235,33 @@ elseif ($semester_sekarang == 5 && $bulan_skrg == 2 && $magang_aktif) $akses_ter
         border-color: var(--bs-primary) !important;
     }
     .transition-all { transition: all 0.3s ease; }
-    .hover-row:hover { background-color: rgba(0,0,0,0.02); }
+    .hover-row:hover { background-color: rgba(0,0,0,0.02)}
+
+
+    .text-alert-danger {
+        color: inherit; 
+    }
+
+    body.dark .alert-warning {
+        background-color: #fff3cd !important; 
+        border-color: #ffecb5 !important;
+    }
+    body.dark .text-alert-danger {
+        color: #842029 !important;
+    }
+    body.dark .text-warning {
+        color: #ffc107 !important;
+    }
+
+<script>
+    $(document).ready(function() {
+        // Cek apakah alert keamanan ada di halaman
+        if ($("#securityAlert").length) {
+            // Tunggu 5000ms (5 detik), lalu fade out pelan-pelan
+            setTimeout(function() {
+                $("#securityAlert").fadeOut('slow');
+            }, 5000);
+        }
+    });
+</script
 </style>
