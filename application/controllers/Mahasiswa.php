@@ -1,51 +1,35 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/**
- * Controller Mahasiswa
- * Menangani Dashboard, Logbook, Mitra, dan Riwayat Karier
- * Updated: Support ID sebagai NIM (Varchar) + Security Check User
- */
 class Mahasiswa extends CI_Controller {
 
     public function __construct()
     {
         parent::__construct();
-        // Cek Login & Role
         if (!$this->session->userdata('logged_in') || $this->session->userdata('role') !== 'mhs') {
             redirect('auth/login');
         }
-        // Load Library Wajib
         $this->load->library(['form_validation', 'upload']);
     }
 
-    // ==========================================================
-    // 1. HALAMAN DASHBOARD
-    // ==========================================================
     public function dashboard() 
     {
         $user_id = $this->session->userdata('user_id');
 
-        // 1. Ambil Data User & Cek Keberadaan
         $data['user'] = $this->db->get_where('users', ['id' => $user_id])->row();
 
-        // --- SECURITY CHECK ---
         if (!$data['user']) {
-            // Jika user tidak ditemukan di DB (misal karena reset database), paksa logout
             $this->session->sess_destroy();
             redirect('auth/login');
             return;
         }
-        // ----------------------
 
-        // Data Lowongan (Limit 4)
-        $this->db->select('lowongan.*, perusahaan.nama_perusahaan as nama, perusahaan.logo');
+        $this->db->select('lowongan.*, perusahaan.nama_perusahaan as nama, perusahaan.logo, perusahaan.industri');
         $this->db->from('lowongan');
         $this->db->join('perusahaan', 'perusahaan.id = lowongan.perusahaan_id');
         $this->db->limit(4);
         $data['perusahaan_list'] = $this->db->get()->result();
 
-        // Data Logbook (Limit 5)
         $this->db->select('logbook.*, dsn.nama_lengkap as nama_dosen');
         $this->db->from('logbook');
         $this->db->join('users as dsn', 'dsn.id = logbook.dosen_id', 'left');
@@ -56,14 +40,13 @@ class Mahasiswa extends CI_Controller {
 
         $data['title'] = 'Dashboard Mahasiswa';
 
-        $this->load->view('mahasiswa/menu', $data);
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_mhs'); 
         $this->load->view('mahasiswa/dashboard', $data);
-        $this->load->view('partials/footer_dashboard');
+        echo '</div>'; 
+        $this->load->view('partials/footer');
     }
 
-    // ==========================================================
-    // 2. HALAMAN LOGBOOK
-    // ==========================================================
     public function logbook()
     {
         $user_id = $this->session->userdata('user_id');
@@ -71,7 +54,6 @@ class Mahasiswa extends CI_Controller {
 
         if (!$data['user']) { redirect('auth/logout'); return; }
 
-        // --- A. HITUNG SEMESTER ---
         $tahun_masuk = (int) $data['user']->tahun_masuk;
         $tahun_skrg  = (int) date('Y');
         $bulan_skrg  = (int) date('n'); 
@@ -88,14 +70,12 @@ class Mahasiswa extends CI_Controller {
         if ($semester < 1) $semester = 1;
         $data['semester_sekarang'] = $semester;
 
-        // --- B. CEK STATUS MAGANG AKTIF ---
         $magang_aktif = $this->db->get_where('riwayat_magang', [
             'mahasiswa_id' => $user_id,
             'status' => 'Aktif'
         ])->row();
         $is_magang_aktif = ($magang_aktif != null);
 
-        // --- C. IZIN AKSES ---
         $akses_terbuka = false;
         if ($semester >= 6) {
             $akses_terbuka = true;
@@ -104,7 +84,6 @@ class Mahasiswa extends CI_Controller {
         }
         $data['akses_terbuka'] = $akses_terbuka; 
 
-        // --- D. AMBIL DATA LOGBOOK ---
         $this->db->select('logbook.*, dsn.nama_lengkap as nama_dosen');
         $this->db->from('logbook');
         $this->db->join('users as dsn', 'dsn.id = logbook.dosen_id', 'left');
@@ -114,20 +93,18 @@ class Mahasiswa extends CI_Controller {
 
         $data['title'] = 'Logbook Magang';
 
-        $this->load->view('mahasiswa/menu', $data);
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_mhs'); 
         $this->load->view('mahasiswa/logbook', $data);
-        $this->load->view('partials/footer_dashboard');
+        echo '</div>'; 
+        $this->load->view('partials/footer');
     }
 
-    // ==========================================================
-    // 3. PROSES LOGBOOK (TAMBAH & UPDATE)
-    // ==========================================================
     public function tambah_logbook()
     {
         $user_id = $this->session->userdata('user_id');
         $user_data = $this->db->get_where('users', ['id' => $user_id])->row();
         
-        // 1. Cari Perusahaan Tempat Magang Aktif
         $magang_aktif = $this->db->get_where('riwayat_magang', [
             'mahasiswa_id' => $user_id,
             'status' => 'Aktif'
@@ -141,7 +118,6 @@ class Mahasiswa extends CI_Controller {
              $this->session->set_flashdata('error', validation_errors());
              redirect('mahasiswa/logbook');
         } else {
-             // 2. Cek File Wajib
              if (empty($_FILES['file_dokumentasi']['name'])) {
                 $this->session->set_flashdata('error', 'Wajib upload File Laporan/Bukti Kegiatan!');
                 redirect('mahasiswa/logbook');
@@ -157,7 +133,6 @@ class Mahasiswa extends CI_Controller {
                 'status'        => 'Menunggu Persetujuan'
              ];
 
-             // 3. Upload File
              $config['upload_path']   = './uploads/logbook/';
              $config['allowed_types'] = 'pdf|jpg|jpeg|png|doc|docx';
              $config['max_size']      = 5120;
@@ -196,7 +171,6 @@ class Mahasiswa extends CI_Controller {
             return;
         }
 
-        // Cek Wajib File (jika sebelumnya kosong)
         if (empty($old_data->file_dokumentasi) && empty($_FILES['file_dokumentasi']['name'])) {
             $this->session->set_flashdata('error', 'Anda wajib mengupload file bukti!');
             redirect('mahasiswa/logbook');
@@ -241,9 +215,11 @@ class Mahasiswa extends CI_Controller {
 
         $data['title'] = 'Daftar Mitra Industri';
 
-        $this->load->view('mahasiswa/menu', $data);
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_mhs'); 
         $this->load->view('mahasiswa/mitra', $data);
-        $this->load->view('partials/footer_dashboard');
+        echo '</div>'; 
+        $this->load->view('partials/footer');
     }
 
     public function detail_mitra($id_perusahaan)
@@ -265,9 +241,11 @@ class Mahasiswa extends CI_Controller {
         
         $data['title'] = 'Profil Mitra - ' . $data['mitra']->nama_perusahaan;
 
-        $this->load->view('mahasiswa/menu', $data);
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_mhs'); 
         $this->load->view('mahasiswa/detail_mitra', $data);
-        $this->load->view('partials/footer_dashboard');
+        echo '</div>'; 
+        $this->load->view('partials/footer');
     }
 
     public function riwayat()
@@ -283,28 +261,26 @@ class Mahasiswa extends CI_Controller {
         $this->db->where('mahasiswa_id', $user_id);
         $this->db->order_by('tgl_mulai', 'DESC');
         $data['riwayat_list'] = $this->db->get()->result();
-
         $data['perusahaan_list'] = $this->db->get('perusahaan')->result();
-
         $data['title'] = 'Riwayat Karier Saya';
 
-        $this->load->view('mahasiswa/menu', $data);
-        $this->load->view('mahasiswa/riwayat', $data);
-        $this->load->view('partials/footer_dashboard');
-    }
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_mhs'); 
+        $this->load->view('mahasiswa/riwayat', $data); 
+        echo '</div>'; 
+        $this->load->view('partials/footer');
+        }
 
     public function tambah_riwayat()
     {
         $user_id = $this->session->userdata('user_id');
         $nama_perusahaan = $this->input->post('nama_perusahaan');
         
-        // Cek Perusahaan
         $perusahaan = $this->db->get_where('perusahaan', ['nama_perusahaan' => $nama_perusahaan])->row();
 
         if ($perusahaan) {
             $perusahaan_id = $perusahaan->id;
         } else {
-            // Buat Perusahaan Baru
             $data_pt = [
                 'nama_perusahaan' => $nama_perusahaan,
                 'alamat' => $this->input->post('lokasi'), 

@@ -14,36 +14,60 @@ class Admin extends CI_Controller {
     public function dashboard()
     {
         $data['title'] = 'Dashboard Admin';
-
-        $data['total_mhs']   = $this->db->where('role', 'mhs')->count_all_results('users');
+        
+        $data['total_mhs'] = $this->db->where('role', 'mhs')->count_all_results('users');
         $data['total_dosen'] = $this->db->where('role', 'dsn')->count_all_results('users');
-        $data['total_mitra'] = $this->db->count_all('perusahaan');
-        $data['total_loker'] = $this->db->count_all('lowongan');
+        $data['total_mitra'] = $this->db->count_all_results('perusahaan');
+        $data['total_loker'] = $this->db->where('tenggat_pengajuan >=', date('Y-m-d'))->count_all_results('lowongan');
 
-        $data['mhs_magang']  = $this->db->where('status', 'Aktif')->count_all_results('riwayat_magang');
-        $data['mhs_selesai'] = $this->db->where('status', 'Selesai')->count_all_results('riwayat_magang');
-        $data['mhs_belum']   = max(0, $data['total_mhs'] - ($data['mhs_magang'] + $data['mhs_selesai']));
+        $angkatan_target = 2022; 
+        
+        $this->db->where('role', 'mhs');
+        $this->db->where('tahun_masuk', $angkatan_target);
+        $total_target_mhs = $this->db->count_all_results('users');
 
-        $query_prodi = $this->db->query("
+        $this->db->select('COUNT(DISTINCT users.id) as jumlah');
+        $this->db->from('users');
+        $this->db->join('riwayat_magang', 'users.id = riwayat_magang.mahasiswa_id');
+        $this->db->where('users.tahun_masuk', $angkatan_target);
+        $sudah_magang = $this->db->get()->row()->jumlah;
+
+        $data['stats_magang'] = [
+            'sudah' => $sudah_magang,
+            'belum' => ($total_target_mhs - $sudah_magang),
+            'total' => $total_target_mhs,
+            'angkatan' => $angkatan_target
+        ];
+
+        $data['stats_prodi'] = $this->db->query("
             SELECT prodi, COUNT(*) as jumlah 
             FROM users 
-            WHERE role = 'mhs' AND prodi IS NOT NULL AND prodi != ''
+            WHERE role = 'mhs' 
             GROUP BY prodi
-            ORDER BY jumlah DESC
-        ");
-        $data['stats_prodi'] = $query_prodi->result();
+        ")->result();
 
-        $this->db->select('r.*, u.nama_lengkap, p.nama_perusahaan');
-        $this->db->from('riwayat_magang r');
-        $this->db->join('users u', 'u.id = r.mahasiswa_id');
-        $this->db->join('perusahaan p', 'p.id = r.perusahaan_id');
-        $this->db->order_by('r.tgl_mulai', 'DESC');
+        $data['top_mitra'] = $this->db->query("
+            SELECT p.nama_perusahaan, p.logo, COUNT(rm.id) as jumlah 
+            FROM riwayat_magang rm 
+            JOIN perusahaan p ON p.id = rm.perusahaan_id 
+            GROUP BY rm.perusahaan_id 
+            ORDER BY jumlah DESC 
+            LIMIT 5
+        ")->result();
+
+        $this->db->select('rm.*, u.nama_lengkap, p.nama_perusahaan, u.id as mahasiswa_id');
+        $this->db->from('riwayat_magang rm');
+        $this->db->join('users u', 'u.id = rm.mahasiswa_id');
+        $this->db->join('perusahaan p', 'p.id = rm.perusahaan_id');
+        $this->db->order_by('rm.tgl_mulai', 'DESC');
         $this->db->limit(5);
         $data['recent_activities'] = $this->db->get()->result();
 
-        $this->load->view('admin/menu', $data);
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_adm'); 
         $this->load->view('admin/dashboard', $data);
-        $this->load->view('partials/footer_dashboard');
+        echo '</div>'; 
+        $this->load->view('partials/footer');
     }
 
 
@@ -61,12 +85,14 @@ class Admin extends CI_Controller {
         $data['mahasiswa'] = $this->db->get()->result();
 
         $this->db->where('role', 'dsn');
-        $this->db->order_by('nama_lengkap', 'ASC');
+        $this->db->order_by('id', 'ASC');
         $data['dosen_list'] = $this->db->get('users')->result();
 
-        $this->load->view('admin/menu', $data);
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_adm'); 
         $this->load->view('admin/mahasiswa', $data);
-        $this->load->view('partials/footer_dashboard');
+        echo '</div>'; 
+        $this->load->view('partials/footer');
     }
 
     public function tambah_mahasiswa()
@@ -157,9 +183,11 @@ class Admin extends CI_Controller {
 
         $data['title'] = 'Detail Riwayat - ' . $data['mhs']->nama_lengkap;
         
-        $this->load->view('admin/menu', $data);
-        $this->load->view('admin/detail_riwayat', $data);
-        $this->load->view('partials/footer_dashboard');
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_adm'); 
+        $this->load->view('admin/mahasiswa', $data);
+        echo '</div>'; 
+        $this->load->view('partials/footer');
     }
 
     public function tambah_riwayat_mhs()
@@ -214,9 +242,11 @@ class Admin extends CI_Controller {
         $this->db->order_by('u.nama_lengkap', 'ASC');
         $data['dosen'] = $this->db->get()->result();
 
-        $this->load->view('admin/menu', $data);
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_adm'); 
         $this->load->view('admin/dosen', $data);
-        $this->load->view('partials/footer_dashboard');
+        echo '</div>'; 
+        $this->load->view('partials/footer');
     }
 
     public function tambah_dosen()
@@ -275,9 +305,11 @@ class Admin extends CI_Controller {
         $this->db->order_by('nama_perusahaan', 'ASC');
         $data['mitra'] = $this->db->get('perusahaan')->result();
 
-        $this->load->view('admin/menu', $data);
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_adm'); 
         $this->load->view('admin/mitra', $data);
-        $this->load->view('partials/footer_dashboard');
+        echo '</div>'; 
+        $this->load->view('partials/footer');
     }
 
     public function detail_mitra($id_perusahaan)
