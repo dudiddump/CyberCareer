@@ -108,15 +108,15 @@ class Admin extends CI_Controller {
         $dosen_id = $this->input->post('dosen_pembimbing_id') ?: NULL;
 
         $data = [
-            'id'                     => $nim, 
-            'nama_lengkap'           => $this->input->post('nama_lengkap'),
-            'prodi'                  => $this->input->post('prodi'),
-            'tahun_masuk'            => $this->input->post('tahun_masuk'),
-            'telepon'                => $this->input->post('telepon'),
-            'alamat'                 => $this->input->post('alamat'),
-            'dosen_pembimbing_id'    => $dosen_id,
-            'role'                   => 'mhs', 
-            'password'               => password_hash('CyberCareer25', PASSWORD_DEFAULT),
+            'id'                 => $nim, 
+            'nama_lengkap'       => $this->input->post('nama_lengkap'),
+            'prodi'              => $this->input->post('prodi'),
+            'tahun_masuk'        => $this->input->post('tahun_masuk'),
+            'telepon'            => $this->input->post('telepon'),
+            'alamat'             => $this->input->post('alamat'),
+            'dosen_pembimbing_id'=> $dosen_id,
+            'role'               => 'mhs', 
+            'password'           => password_hash('CyberCareer25', PASSWORD_DEFAULT),
             'default_password_changed' => 0
         ];
 
@@ -321,33 +321,83 @@ class Admin extends CI_Controller {
         $this->db->order_by('tgl_posting', 'DESC');
         $data['lowongan'] = $this->db->get('lowongan')->result();
 
-        $this->load->view('admin/menu', $data);
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_adm');
         $this->load->view('admin/detail_mitra', $data);
-        $this->load->view('partials/footer_dashboard');
+        echo '</div>';
+        $this->load->view('partials/footer');
     }
 
     public function tambah_mitra()
     {
+        $industriArr = $this->input->post('industri');
+        $industriStr = !empty($industriArr) ? implode(', ', $industriArr) : '';
+
+        $logo = null;
+        if (!empty($_FILES['logo']['name'])) {
+            $config['upload_path']   = './assets/img/';
+            $config['allowed_types'] = 'jpg|jpeg|png';
+            $config['max_size']      = 2048;
+            $config['encrypt_name']  = TRUE; // Nama file diacak
+
+            $this->load->library('upload', $config);
+
+            if ($this->upload->do_upload('logo')) {
+                $logo = $this->upload->data('file_name');
+            } else {
+                // Jika error, log errornya tapi tetap lanjut insert data (opsional)
+                // $error = $this->upload->display_errors();
+            }
+        }
+
         $data = [
             'nama_perusahaan' => $this->input->post('nama'),
-            'industri'        => $this->input->post('industri'),
+            'industri'        => $industriStr, // Simpan string industri
             'alamat'          => $this->input->post('alamat'),
-            'website'         => $this->input->post('website')
+            'website'         => $this->input->post('website'),
+            'telepon'         => $this->input->post('telepon'), // Tambahan telepon
+            'logo'            => $logo // Tambahan logo
         ];
+
         $this->db->insert('perusahaan', $data);
         $this->session->set_flashdata('success', 'Mitra berhasil ditambahkan');
         redirect('admin/mitra');
     }
 
+    // --- FITUR BARU: Update Mitra dengan Upload Logo ---
     public function update_mitra()
     {
         $id = $this->input->post('id_mitra');
+        
+        // 1. Handle Checkbox Industri
+        $industriArr = $this->input->post('industri');
+        $industriStr = !empty($industriArr) ? implode(', ', $industriArr) : '';
+
+        // Data dasar
         $data = [
             'nama_perusahaan' => $this->input->post('nama'),
-            'industri'        => $this->input->post('industri'),
+            'industri'        => $industriStr,
             'website'         => $this->input->post('website'),
-            'alamat'          => $this->input->post('alamat')
+            'alamat'          => $this->input->post('alamat'),
+            'telepon'         => $this->input->post('telepon')
         ];
+
+        // 2. Cek apakah ada file logo baru yang diupload
+        if (!empty($_FILES['logo']['name'])) {
+            $config['upload_path']   = './assets/img/';
+            $config['allowed_types'] = 'jpg|jpeg|png';
+            $config['max_size']      = 2048;
+            $config['encrypt_name']  = TRUE;
+
+            $this->load->library('upload', $config);
+
+            if ($this->upload->do_upload('logo')) {
+                // Jika sukses, masukkan nama file baru ke array data
+                $data['logo'] = $this->upload->data('file_name');
+                
+                // Opsional: Hapus logo lama jika perlu, tapi biarkan dulu agar aman
+            }
+        }
 
         $this->db->where('id', $id);
         $this->db->update('perusahaan', $data);
@@ -421,6 +471,7 @@ class Admin extends CI_Controller {
     public function get_mitra_detail($id)
     {
         $data = $this->db->get_where('perusahaan', ['id' => $id])->row();
+        header('Content-Type: application/json');
         echo json_encode($data);
     }
     
