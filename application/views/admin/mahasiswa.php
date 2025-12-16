@@ -103,6 +103,7 @@
     }
 </style>
 
+<div class="p-4">
 <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-4 d-print-none gap-3">
     <div class="mb-2 mb-lg-0">
         <h2 class="fw-bold text-dark mb-0">Data Mahasiswa</h2>

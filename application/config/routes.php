@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-$route['default_controller'] = 'Landing_page';
+$route['default_controller'] = 'home';
 $route['mahasiswa/dashboard'] = 'mahasiswa/dashboard';
 $route['dosen/dashboard'] = 'dosen/dashboard';
 $route['admin/dashboard'] = 'admin/dashboard';

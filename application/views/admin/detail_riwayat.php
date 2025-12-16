@@ -48,6 +48,7 @@
     }
 </style>
 
+<div class="p-4">
 <div class="mb-4 d-print-none">
     <a href="<?= base_url('admin/mahasiswa') ?>" class="text-decoration-none text-muted small fw-bold">
         <i class="bi bi-arrow-left me-1"></i> KEMBALI KE DATA MAHASISWA

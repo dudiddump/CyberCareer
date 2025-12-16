@@ -23,6 +23,7 @@
     }
 </style>
 
+<div class="p-4">
 <div class="card card-modern border-0 mb-4 overflow-hidden position-relative" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);">
     <div class="card-body p-4 position-relative z-1 text-white">
         <div class="d-flex align-items-center mb-3">

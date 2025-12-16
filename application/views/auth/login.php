@@ -50,7 +50,7 @@
 
     <body class="d-flex align-items-center justify-content-center vh-100 <?= ($this->session->userdata('theme') == 'dark') ? 'dark' : '' ?>">
 
-    <a href="<?= base_url() ?>" class="btn-back">
+    <a href="<?= base_url('landing_page') ?>" class="btn-back">
         <i class="bi bi-arrow-left"></i> Kembali
     </a>
         <?php $this->load->view('partials/switch_theme'); ?>

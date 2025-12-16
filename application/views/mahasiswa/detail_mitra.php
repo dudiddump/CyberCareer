@@ -1,3 +1,4 @@
+<div class="p-4">
 <div class="mb-4">
     <a href="<?= base_url('mahasiswa/mitra') ?>" class="text-decoration-none text-muted small fw-bold">
         <i class="bi bi-arrow-left me-1"></i> KEMBALI KE DAFTAR MITRA

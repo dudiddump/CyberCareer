@@ -1,3 +1,4 @@
+<div class="p-4">
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h2 class="fw-bold text-dark mb-0">Profil Saya</h2>
@@ -125,7 +126,7 @@
                     </div>
                     <div>
                         <div class="fw-bold text-dark small">Curriculum Vitae</div>
-                        <?php if($user->file_cv): ?>
+                        <?php if(!empty($user->file_cv)): ?>
                             <small class="text-success d-flex align-items-center gap-1" style="font-size: 10px;">
                                 <i class="bi bi-check-circle-fill"></i> Terupload
                             </small>
@@ -135,7 +136,7 @@
                     </div>
                 </div>
                 <div>
-                    <?php if($user->file_cv): ?>
+                    <?php if(!empty($user->file_cv)): ?>
                         <a href="<?= base_url('uploads/cv/'.$user->file_cv) ?>" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-4 fw-bold">Lihat</a>
                     <?php else: ?>
                         <button class="btn btn-sm btn-outline-primary rounded-pill px-4 fw-bold" onclick="document.getElementById('btnEditModalTrigger').click()">Upload</button>
@@ -172,7 +173,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" id="btnEditModalTrigger"></button>
             </div>
             <div class="modal-body p-4">
-                <?= form_open_multipart('user/update_profil') ?>
+                <?= form_open_multipart('mahasiswa/update_profil') ?>
                     
                     <div class="row g-3">
                         <div class="col-12 text-center mb-3">
@@ -248,7 +249,7 @@
                                     <input type="password" name="confirm_password" class="form-control input-modern" placeholder="Ulangi Password Baru">
                                 </div>
                                 <div class="text-end">
-                                    <button type="submit" formaction="<?= base_url('user/process_change_password') ?>" class="btn btn-sm btn-dark rounded-pill px-4">Update Password</button>
+                                    <button type="submit" formaction="<?= base_url('user/change_pass') ?>" class="btn btn-sm btn-dark rounded-pill px-4">Update Password</button>
                                 </div>
                             </div>
                         </div>

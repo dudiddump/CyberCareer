@@ -16,6 +16,7 @@ class Mahasiswa extends CI_Controller {
     {
         $user_id = $this->session->userdata('user_id');
 
+        // Ambil Data User (Mahasiswa)
         $data['user'] = $this->db->get_where('users', ['id' => $user_id])->row();
 
         if (!$data['user']) {
@@ -24,15 +25,16 @@ class Mahasiswa extends CI_Controller {
             return;
         }
 
+        // 1. Ambil List Lowongan (Limit 4 untuk Dashboard)
         $this->db->select('lowongan.*, perusahaan.nama_perusahaan as nama, perusahaan.logo, perusahaan.industri');
         $this->db->from('lowongan');
         $this->db->join('perusahaan', 'perusahaan.id = lowongan.perusahaan_id');
         $this->db->limit(4);
         $data['perusahaan_list'] = $this->db->get()->result();
 
-        $this->db->select('logbook.*, dsn.nama_lengkap as nama_dosen');
+        // 2. Ambil Logbook Terakhir (PERBAIKAN: Hapus Join Dosen_ID)
+        $this->db->select('logbook.*'); 
         $this->db->from('logbook');
-        $this->db->join('users as dsn', 'dsn.id = logbook.dosen_id', 'left');
         $this->db->where('logbook.mahasiswa_id', $user_id);
         $this->db->order_by('logbook.tanggal', 'DESC');
         $this->db->limit(5);
@@ -54,6 +56,7 @@ class Mahasiswa extends CI_Controller {
 
         if (!$data['user']) { redirect('auth/logout'); return; }
 
+        // --- Logic Semester ---
         $tahun_masuk = (int) $data['user']->tahun_masuk;
         $tahun_skrg  = (int) date('Y');
         $bulan_skrg  = (int) date('n'); 
@@ -70,12 +73,14 @@ class Mahasiswa extends CI_Controller {
         if ($semester < 1) $semester = 1;
         $data['semester_sekarang'] = $semester;
 
+        // --- Logic Cek Status Magang ---
         $magang_aktif = $this->db->get_where('riwayat_magang', [
             'mahasiswa_id' => $user_id,
             'status' => 'Aktif'
         ])->row();
         $is_magang_aktif = ($magang_aktif != null);
 
+        // --- Logic Akses Logbook ---
         $akses_terbuka = false;
         if ($semester >= 6) {
             $akses_terbuka = true;
@@ -84,9 +89,9 @@ class Mahasiswa extends CI_Controller {
         }
         $data['akses_terbuka'] = $akses_terbuka; 
 
-        $this->db->select('logbook.*, dsn.nama_lengkap as nama_dosen');
+        // --- Ambil Data Logbook ---
+        $this->db->select('logbook.*');
         $this->db->from('logbook');
-        $this->db->join('users as dsn', 'dsn.id = logbook.dosen_id', 'left');
         $this->db->where('logbook.mahasiswa_id', $user_id);
         $this->db->order_by('logbook.tanggal', 'DESC');
         $data['logbook_list'] = $this->db->get()->result();
@@ -103,7 +108,6 @@ class Mahasiswa extends CI_Controller {
     public function tambah_logbook()
     {
         $user_id = $this->session->userdata('user_id');
-        $user_data = $this->db->get_where('users', ['id' => $user_id])->row();
         
         $magang_aktif = $this->db->get_where('riwayat_magang', [
             'mahasiswa_id' => $user_id,
@@ -127,7 +131,6 @@ class Mahasiswa extends CI_Controller {
              $data = [
                 'mahasiswa_id'  => $user_id,
                 'perusahaan_id' => $perusahaan_id,
-                'dosen_id'      => $user_data->dosen_pembimbing_id ?? '0', 
                 'tanggal'       => date('Y-m-d'), 
                 'kegiatan'      => $this->input->post('kegiatan'),
                 'status'        => 'Menunggu Persetujuan'
@@ -205,20 +208,16 @@ class Mahasiswa extends CI_Controller {
 
     public function mitra()
     {
-        $user_id = $this->session->userdata('user_id');
-        $data['user'] = $this->db->get_where('users', ['id' => $user_id])->row();
-
-        if (!$data['user']) { redirect('auth/logout'); return; }
-
+        $data['title'] = 'Eksplorasi Mitra';
+        $this->db->select('perusahaan.*, (SELECT COUNT(*) FROM lowongan WHERE lowongan.perusahaan_id = perusahaan.id) as jumlah_loker');
         $this->db->order_by('nama_perusahaan', 'ASC');
+        
         $data['mitra_list'] = $this->db->get('perusahaan')->result();
-
-        $data['title'] = 'Daftar Mitra Industri';
 
         $this->load->view('partials/header', $data);
         $this->load->view('partials/sidebar_mhs'); 
         $this->load->view('mahasiswa/mitra', $data);
-        echo '</div>'; 
+        echo '</div>';
         $this->load->view('partials/footer');
     }
 
@@ -255,12 +254,13 @@ class Mahasiswa extends CI_Controller {
 
         if (!$data['user']) { redirect('auth/logout'); return; }
 
-        $this->db->select('riwayat_magang.*, perusahaan.nama_perusahaan, perusahaan.logo');
+        $this->db->select('riwayat_magang.*, perusahaan.nama_perusahaan, perusahaan.logo, perusahaan.alamat');
         $this->db->from('riwayat_magang');
         $this->db->join('perusahaan', 'perusahaan.id = riwayat_magang.perusahaan_id');
         $this->db->where('mahasiswa_id', $user_id);
         $this->db->order_by('tgl_mulai', 'DESC');
         $data['riwayat_list'] = $this->db->get()->result();
+        
         $data['perusahaan_list'] = $this->db->get('perusahaan')->result();
         $data['title'] = 'Riwayat Karier Saya';
 
@@ -269,7 +269,7 @@ class Mahasiswa extends CI_Controller {
         $this->load->view('mahasiswa/riwayat', $data); 
         echo '</div>'; 
         $this->load->view('partials/footer');
-        }
+    }
 
     public function tambah_riwayat()
     {
@@ -305,10 +305,142 @@ class Mahasiswa extends CI_Controller {
         redirect('mahasiswa/riwayat');
     }
 
+    public function update_riwayat()
+    {
+        $user_id = $this->session->userdata('user_id');
+        $id_riwayat = $this->input->post('id_riwayat');
+        
+        $nama_perusahaan = $this->input->post('nama_perusahaan');
+        $perusahaan = $this->db->get_where('perusahaan', ['nama_perusahaan' => $nama_perusahaan])->row();
+
+        if ($perusahaan) {
+            $perusahaan_id = $perusahaan->id;
+            $this->db->where('id', $perusahaan_id);
+            $this->db->update('perusahaan', ['alamat' => $this->input->post('lokasi')]);
+        } else {
+            $data_pt = [
+                'nama_perusahaan' => $nama_perusahaan,
+                'alamat' => $this->input->post('lokasi'),
+                'industri' => 'Lainnya'
+            ];
+            $this->db->insert('perusahaan', $data_pt);
+            $perusahaan_id = $this->db->insert_id();
+        }
+
+        $data_update = [
+            'perusahaan_id' => $perusahaan_id,
+            'posisi'        => $this->input->post('posisi'),
+            'tgl_mulai'     => $this->input->post('tgl_mulai'),
+            'tgl_selesai'   => ($this->input->post('status') == 'Aktif') ? NULL : $this->input->post('tgl_selesai'),
+            'status'        => $this->input->post('status')
+        ];
+        
+        $this->db->where('id', $id_riwayat);
+        $this->db->where('mahasiswa_id', $user_id);
+        $this->db->update('riwayat_magang', $data_update);
+
+        $this->session->set_flashdata('success', 'Riwayat karier berhasil diperbarui!');
+        redirect('mahasiswa/riwayat');
+    }
+
     public function hapus_riwayat($id)
     {
         $this->db->delete('riwayat_magang', ['id' => $id, 'mahasiswa_id' => $this->session->userdata('user_id')]);
         $this->session->set_flashdata('success', 'Data berhasil dihapus.');
         redirect('mahasiswa/riwayat');
+    }
+
+    public function profil()
+    {
+        $userId = $this->session->userdata('user_id');
+        $data['title'] = 'Kelola Profil - CyberCareer';
+        $data['user'] = $this->db->get_where('users', ['id' => $userId])->row();
+
+        $tahun_masuk = (int) $data['user']->tahun_masuk;
+        $tahun_skrg  = (int) date('Y');
+        $bulan_skrg  = (int) date('n'); 
+
+        $selisih_tahun = $tahun_skrg - $tahun_masuk;
+        if ($bulan_skrg >= 9) {
+            $semester = ($selisih_tahun * 2) + 1;
+        } elseif ($bulan_skrg < 2) {
+            $semester = ($selisih_tahun * 2) - 1;
+        } else {
+            $semester = ($selisih_tahun * 2);
+        }
+
+        if ($semester < 1) $semester = 1;
+        $data['semester'] = $semester;
+
+        if (!empty($data['user']->dosen_pembimbing_id)) {
+            $dosen = $this->db->get_where('users', ['id' => $data['user']->dosen_pembimbing_id])->row();
+            $data['nama_dosen'] = $dosen ? $dosen->nama_lengkap : '-';
+        } else {
+            $data['nama_dosen'] = 'Belum Ditentukan';
+        }
+
+        $this->load->view('partials/header', $data);
+        $this->load->view('partials/sidebar_mhs'); 
+        $this->load->view('mahasiswa/profil', $data); 
+        echo '</div>'; 
+        $this->load->view('partials/footer');
+    }
+
+    public function update_profil()
+    {
+        $userId = $this->session->userdata('user_id');
+        $user = $this->db->get_where('users', ['id' => $userId])->row();
+
+        $data_update = [
+            'ipk_terakhir'  => $this->input->post('ipk_terakhir', TRUE),
+            'tentang_saya'  => $this->input->post('tentang_saya', TRUE),
+            'telepon'       => $this->input->post('telepon', TRUE),
+            'linkedin'      => $this->input->post('linkedin', TRUE),
+            'github'        => $this->input->post('github', TRUE),
+            'website'       => $this->input->post('website', TRUE)
+        ];
+
+        if (!empty($_FILES['foto']['name'])) {
+            $config_foto['upload_path']   = './uploads/foto/';
+            $config_foto['allowed_types'] = 'jpg|jpeg|png';
+            $config_foto['max_size']      = 2048;
+            $config_foto['encrypt_name']  = TRUE;
+
+            $this->upload->initialize($config_foto);
+
+            if ($this->upload->do_upload('foto')) {
+                $upData = $this->upload->data();
+                $data_update['foto'] = $upData['file_name'];
+                if ($user->foto && file_exists('./uploads/foto/' . $user->foto)) {
+                    @unlink('./uploads/foto/' . $user->foto);
+                }
+            }
+        }
+
+        if (!empty($_FILES['file_cv']['name'])) {
+            $this->upload = null;
+            $this->load->library('upload');
+
+            $config_cv['upload_path']   = './uploads/cv/';
+            $config_cv['allowed_types'] = 'pdf|doc|docx';
+            $config_cv['max_size']      = 5120;
+            $config_cv['encrypt_name']  = TRUE;
+
+            $this->upload->initialize($config_cv);
+
+            if ($this->upload->do_upload('file_cv')) {
+                $upDataCV = $this->upload->data();
+                $data_update['file_cv'] = $upDataCV['file_name'];
+                if ($user->file_cv && file_exists('./uploads/cv/' . $user->file_cv)) {
+                    @unlink('./uploads/cv/' . $user->file_cv);
+                }
+            }
+        }
+
+        $this->db->where('id', $userId);
+        $this->db->update('users', $data_update);
+
+        $this->session->set_flashdata('success', 'Profil berhasil diperbarui!');
+        redirect('mahasiswa/profil');
     }
 }

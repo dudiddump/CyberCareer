@@ -17,6 +17,7 @@ if ($semester_sekarang >= 6) $akses_terbuka = true;
 elseif ($semester_sekarang == 5 && $bulan_skrg == 2 && $magang_aktif) $akses_terbuka = true;
 ?>
 
+<div class="p-4">
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h2 class="fw-bold text-dark mb-0">Dashboard</h2>
@@ -37,7 +38,7 @@ elseif ($semester_sekarang == 5 && $bulan_skrg == 2 && $magang_aktif) $akses_ter
         <div>
             <h6 class="fw-bold mb-1 text-alert-danger">Peringatan Keamanan!</h6>
             <span class="small">Anda masih menggunakan password default. Demi keamanan akun, segera 
-            <a href="<?= base_url('user/profil') ?>" class="fw-bold text-decoration-underline text-alert-danger">ganti password Anda</a>.</span>
+            <a href="<?= base_url('mahasiswa/profil') ?>" class="fw-bold text-decoration-underline text-alert-danger">ganti password Anda</a>.</span>
         </div>
     </div>
 <?php endif; ?>
@@ -186,7 +187,7 @@ elseif ($semester_sekarang == 5 && $bulan_skrg == 2 && $magang_aktif) $akses_ter
                 </div>
                 
                 <div class="d-grid px-4">
-                    <a href="<?= base_url('user/profil') ?>" class="btn btn-outline-dark btn-sm rounded-pill">
+                    <a href="<?= base_url('mahasiswa/profil') ?>" class="btn btn-outline-dark btn-sm rounded-pill">
                         <i class="bi bi-gear-fill me-1"></i> Kelola Profil
                     </a>
                 </div>
@@ -252,6 +253,7 @@ elseif ($semester_sekarang == 5 && $bulan_skrg == 2 && $magang_aktif) $akses_ter
     body.dark .text-warning {
         color: #ffc107 !important;
     }
+</style>
 
 <script>
     $(document).ready(function() {
@@ -263,5 +265,5 @@ elseif ($semester_sekarang == 5 && $bulan_skrg == 2 && $magang_aktif) $akses_ter
             }, 5000);
         }
     });
-</script
-</style>
+</script>
+</div>
