@@ -148,9 +148,13 @@
                         Platform resmi Cyber University untuk menghubungkan mahasiswa dengan dunia industri. Magang, kerja praktik, dan karier impian dalam satu pintu.
                     </p>
                     
-                    <div class="d-flex gap-3 flex-column flex-sm-row">
+                    <div class="d-flex gap-3 flex-column flex-sm-row justify-content-center">
                         <a href="<?= base_url('auth/login') ?>" class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-lg fw-bold transition-all">
                             Mulai Sekarang
+                        </a>
+
+                        <a href="<?= base_url('home') ?>" class="btn btn-outline-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg fade-in-up d-3">
+                            <i class="bi bi-play-circle-fill me-2"></i> Buka Presentasi
                         </a>
                     </div>
 
@@ -160,7 +164,7 @@
                             <small class="text-muted">Mitra Perusahaan</small>
                         </div>
                         <div class="col-4 border-start">
-                            <h3 class="fw-bold mb-0 text-dark">500+</h3>
+                            <h3 class="fw-bold mb-0 text-dark">200+</h3>
                             <small class="text-muted">Mahasiswa Aktif</small>
                         </div>
                         <div class="col-4 border-start">

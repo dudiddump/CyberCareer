@@ -115,13 +115,11 @@
                                 <?php endif; ?>
                             </td>
                             <td class="text-center">
-                                <?php if($log->file_dokumentasi): ?>
-                                    <a href="<?= base_url('uploads/logbook/'.$log->file_dokumentasi) ?>" target="_blank" class="btn btn-sm btn-light border text-primary rounded-circle" title="Lihat File">
-                                        <i class="bi bi-file-earmark-text"></i>
-                                    </a>
-                                <?php else: ?>
-                                    <span class="badge bg-light text-muted border rounded-pill" style="font-size: 10px;">Empty</span>
-                                <?php endif; ?>
+                                <?php if (isset($row->file_dokumentasi) && !empty($row->file_dokumentasi)) : ?>
+    <a href="<?php echo base_url('uploads/' . $row->file_dokumentasi); ?>">Unduh</a>
+<?php else : ?>
+    <span class="badge badge-warning">Tidak ada file</span>
+<?php endif; ?>
                             </td>
                             <td>
                                 <?php 
